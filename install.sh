@@ -315,9 +315,9 @@ ohai "This script will install:"
 echo "${TRAY_HOME}/repo/"
 
 
-mkdir ${TRAY_HOME}
-cd ${TRAY_HOME}
 
+mkdir -p ${TRAY_HOME}
+cd ${TRAY_HOME}
 if [ -d repository ]; then
  mkdir repository
  execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
