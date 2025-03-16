@@ -3,6 +3,13 @@
  */
 package org.example;
 
+import io.github.zebin.javabash.frontend.FunnyTerminal;
+import io.github.zebin.javabash.process.TerminalProcess;
+import io.github.zebin.javabash.sandbox.BashUtils;
+
+import java.util.Arrays;
+import java.util.List;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
@@ -10,5 +17,16 @@ public class App {
 
     public static void main(String[] args) {
         System.out.println(new App().getGreeting());
+        FunnyTerminal terminal = new FunnyTerminal(
+                new TerminalProcess(BashUtils.runShellForOs(Runtime.getRuntime()))
+        );
+
+        if (Arrays.equals(args, List.of("audio", "on").toArray(new String[]{}))) {
+            terminal.eval("bluetoothctl connect \"00:02:5B:00:FF:00\"");
+        } else if (Arrays.equals(args, List.of("audio", "off").toArray(new String[]{}))) {
+            terminal.eval("bluetoothctl disconnect \"00:02:5B:00:FF:00\"");
+        }
+
+
     }
 }

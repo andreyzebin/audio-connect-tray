@@ -10,6 +10,10 @@ plugins {
     application
 }
 
+var logbackVersion = "1.5.6"
+var slf4jVersion = "2.0.13"
+var junitVersion = "5.10.1"
+
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
@@ -17,7 +21,13 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // This dependency is used by the application.
-    implementation(libs.guava)
+    implementation("io.github.andreyzebin:java-bash:2.0.0")
+
+
+    implementation("ch.qos.logback:logback-core:$logbackVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+    implementation("org.codehaus.janino:janino:3.1.12")
 
 }
 
@@ -30,7 +40,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.example.HelloWorld"
+    mainClass = "org.example.App"
 }
 
 tasks.named<Test>("test") {
