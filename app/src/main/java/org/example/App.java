@@ -26,7 +26,7 @@ public class App {
         } else if (Arrays.equals(args, List.of("audio", "off").toArray(new String[]{}))) {
             terminal.eval("bluetoothctl disconnect \"00:02:5B:00:FF:00\"");
         } else if (Arrays.equals(args, List.of("shellenv").toArray(new String[]{}))) {
-            terminal.eval("echo \"${TRAY_HOME}\"");
+            terminal.eval("echo \"TRAY_HOME=${TRAY_HOME}\"");
         }
 
 
