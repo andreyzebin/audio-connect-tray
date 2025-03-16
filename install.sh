@@ -314,6 +314,12 @@ TRAY_HOME=~/.tray
 ohai "This script will install:"
 echo "${TRAY_HOME}/repo/"
 
-execute "${USABLE_GIT}" clone
+
+mkdir ${TRAY_HOME}
+cd ${TRAY_HOME}
+mkdir repository
+execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
+cd repository
+execute "${USABLE_GRADLE}" clean app:run --args='audio on'
 
 
