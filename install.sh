@@ -329,9 +329,5 @@ chmod u+x ${TRAY_HOME}/bin/tray
 ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
 
 
-execute "${USABLE_GRADLE}" clean app:run --args='audio on'
-execute "${USABLE_GRADLE}" clean app:run --args='audio off'
-
-
 
 
