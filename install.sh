@@ -326,6 +326,7 @@ else
 fi
 cd repository
 execute "${USABLE_GRADLE}" clean app:run --args='audio on'
+execute "${USABLE_GRADLE}" clean app:run --args='audio off'
 execute "${USABLE_GRADLE}" clean app:run --args='shellenv'
 
 
