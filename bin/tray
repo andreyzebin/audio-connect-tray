@@ -1,0 +1,59 @@
+#!/bin/bash -pu
+set -u
+
+# Fail fast with concise message when not using bash
+# Single brackets is needed here for POSIX compatibility
+# shellcheck disable=SC2292
+if [ -z "${BASH_VERSION:-}" ]
+then
+  echo "Error: Bash is required to run brew." >&2
+  exit 1
+fi
+
+set +o posix # as we are using bash now
+
+# Fail fast with concise messages when PWD has issues
+if [[ -z "${PWD-}" ]]
+then
+  echo "Error: \$PWD must be set to run brew." >&2
+  exit 1
+fi
+if ! [[ -d "${PWD}" ]]
+then
+  echo "Error: The current working directory must exist to run brew." >&2
+  exit 1
+fi
+if ! [[ -r "${PWD}" ]]
+then
+  echo "Error: The current working directory must be readable to ${USER} to run brew." >&2
+  exit 1
+fi
+
+# Fail fast with concise message when HOME is unset
+if [[ -z "${HOME:-}" ]]
+then
+  echo "Error: \$HOME must be set to run brew." >&2
+  exit 1
+fi
+
+# Check the number of arguments
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <arg1> <arg2>"
+    exit 1
+fi
+
+# Access the arguments
+arg1="$1"
+arg2="$2"
+echo "Argument 1: $arg1"
+echo "Argument 2: $arg2"
+
+
+# Absolute path to this script, e.g. /home/user/bin/foo.sh
+SCRIPT=$(readlink -f "$0")
+# Absolute path this script is in, thus /home/user/bin
+SCRIPTPATH=$(dirname "$SCRIPT")
+echo $SCRIPTPATH
+
+# cd repository
+# ./gradlew clean app:run --args='audio on'
