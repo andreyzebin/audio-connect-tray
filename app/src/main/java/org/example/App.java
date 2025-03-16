@@ -11,12 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
         FunnyTerminal terminal = new FunnyTerminal(
                 new TerminalProcess(BashUtils.runShellForOs(Runtime.getRuntime()))
         );
@@ -26,7 +23,7 @@ public class App {
         } else if (Arrays.equals(args, List.of("audio", "off").toArray(new String[]{}))) {
             terminal.eval("bluetoothctl disconnect \"00:02:5B:00:FF:00\"");
         } else if (Arrays.equals(args, List.of("shellenv").toArray(new String[]{}))) {
-            terminal.eval("echo \"TRAY_HOME=${TRAY_HOME}\"");
+            terminal.eval("echo TRAY_HOME=${TRAY_HOME}");
         }
 
 
