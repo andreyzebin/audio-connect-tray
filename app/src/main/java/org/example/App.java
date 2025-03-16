@@ -18,10 +18,19 @@ public class App {
                 new TerminalProcess(BashUtils.runShellForOs(Runtime.getRuntime()))
         );
 
+        String os = terminal.eval("echo $(uname)");
         if (Arrays.equals(args, List.of("audio", "on").toArray(new String[]{}))) {
-            terminal.eval("bluetoothctl connect \"00:02:5B:00:FF:00\"");
+            if (os.equals("Linux")) {
+                terminal.eval("bluetoothctl connect \"00:02:5B:00:FF:00\"");
+            } else if (os.equals("Darwin")) {
+                terminal.eval("blueutil --connect 00:02:5B:00:FF:00");
+            }
         } else if (Arrays.equals(args, List.of("audio", "off").toArray(new String[]{}))) {
-            terminal.eval("bluetoothctl disconnect \"00:02:5B:00:FF:00\"");
+            if (os.equals("Linux")) {
+                terminal.eval("bluetoothctl disconnect \"00:02:5B:00:FF:00\"");
+            } else if (os.equals("Darwin")) {
+                terminal.eval("blueutil --disconnect 00:02:5B:00:FF:00");
+            }
         } else if (Arrays.equals(args, List.of("shellenv").toArray(new String[]{}))) {
             terminal.eval("echo TRAY_HOME=${TRAY_HOME}");
         }
