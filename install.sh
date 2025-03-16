@@ -312,13 +312,13 @@ fi
 USABLE_GRADLE=./gradlew
 TRAY_HOME=~/.tray
 ohai "This script will install:"
-echo "${TRAY_HOME}/repo/"
+echo "${TRAY_HOME}/repository/"
 
 
 
 mkdir -p ${TRAY_HOME}
 cd ${TRAY_HOME}
-if [ -d repository ]; then
+if [ ! -d repository ]; then
  mkdir repository
  execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
 fi
