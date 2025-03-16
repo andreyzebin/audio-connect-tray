@@ -325,6 +325,7 @@ cd repository
 execute "${USABLE_GIT}" pull
 
 cp -r bin ${TRAY_HOME}/
+chmod u+x ${TRAY_HOME}/bin/tray
 ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
 
 
