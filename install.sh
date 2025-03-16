@@ -319,8 +319,10 @@ echo "${TRAY_HOME}/repository/"
 mkdir -p ${TRAY_HOME}
 cd ${TRAY_HOME}
 if [ ! -d repository ]; then
- mkdir repository
- execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
+  mkdir repository
+  execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
+else
+  execute "${USABLE_GIT}" pull
 fi
 cd repository
 execute "${USABLE_GRADLE}" clean app:run --args='audio on'
