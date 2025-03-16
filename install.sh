@@ -322,10 +322,12 @@ if [ ! -d repository ]; then
   execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
 fi
 cd repository
+execute "${USABLE_GIT}" pull
+
 cp -r bin ${TRAY_HOME}/
 ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
 
-execute "${USABLE_GIT}" pull
+
 execute "${USABLE_GRADLE}" clean app:run --args='audio on'
 execute "${USABLE_GRADLE}" clean app:run --args='audio off'
 
