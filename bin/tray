@@ -40,11 +40,8 @@ fi
 SCRIPT=$(readlink -f "$0")
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=$(dirname "$SCRIPT")
-echo $SCRIPTPATH
 
 curdir=$(pwd)
-
-
 # Check the number of arguments
 if [ "$#" -lt 1 ]; then
     echo "Missing arguments"
