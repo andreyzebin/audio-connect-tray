@@ -322,6 +322,7 @@ if [ ! -d repository ]; then
   mkdir repository
   execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
 else
+  cd repository
   execute "${USABLE_GIT}" pull
 fi
 cd repository
