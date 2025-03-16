@@ -309,8 +309,8 @@ EOABORT
   fi
 fi
 
-USABLE_GRADLE=./gradlew
-TRAY_HOME=~/.tray
+export USABLE_GRADLE=./gradlew
+export TRAY_HOME=~/.tray
 ohai "This script will install:"
 echo "${TRAY_HOME}/repository/"
 
