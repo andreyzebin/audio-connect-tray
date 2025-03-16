@@ -321,11 +321,9 @@ cd ${TRAY_HOME}
 if [ ! -d repository ]; then
   mkdir repository
   execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
-else
-  cd repository
-  execute "${USABLE_GIT}" pull
 fi
 cd repository
+execute "${USABLE_GIT}" pull
 execute "${USABLE_GRADLE}" clean app:run --args='audio on'
 execute "${USABLE_GRADLE}" clean app:run --args='audio off'
 execute "${USABLE_GRADLE}" clean app:run --args='shellenv'
