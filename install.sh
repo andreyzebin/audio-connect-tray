@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eu
 
 # We don't need return codes for "$(command)", only stdout is needed.
 # Allow `[[ -n "$(command)" ]]`, `func "$(command)"`, pipes, etc.
@@ -502,7 +502,18 @@ echo "${TRAY_HOME}/repository/"
 echo "${TRAY_HOME}/bin/tray"
 echo "/usr/local/bin/tray -> ${TRAY_HOME}/bin/tray"
 
+# check to see if this file is being run or sourced from another script
+_is_sourced() {
+    # https://unix.stackexchange.com/a/215279
+    [ "${#FUNCNAME[@]}" -ge 2 ] \
+        && [ "${FUNCNAME[0]}" = '_is_sourced' ] \
+        && [ "${FUNCNAME[1]}" = 'source' ]
+}
 
+curdir=$(pwd)
+(
+# this is the 'finally' statement
+echo "finally this"
 mkdir -p ${TRAY_HOME}
 cd ${TRAY_HOME}
 if [ ! -d repository ]; then
@@ -515,7 +526,15 @@ execute "${USABLE_GIT}" pull
 cp -r bin ${TRAY_HOME}/
 chmod u+x ${TRAY_HOME}/bin/tray
 ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
-
-
-
+) || (
+  echo "Installation failed!"
+  cd $curdir
+  if [ _is_sourced ]; then
+    echo "Its sourced - using return instead exit"
+    return;
+  fi
+  exit 1
+)
+cd $curdir
+echo "Installation successful!"
 
