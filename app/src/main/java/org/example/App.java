@@ -6,10 +6,15 @@ package org.example;
 import io.github.zebin.javabash.frontend.FunnyTerminal;
 import io.github.zebin.javabash.process.TerminalProcess;
 import io.github.zebin.javabash.sandbox.BashUtils;
+import io.github.zebin.javabash.sandbox.FileManager;
+import io.github.zebin.javabash.sandbox.PosixPath;
+import io.github.zebin.javabash.sandbox.WorkingDirectory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @Slf4j
 public class App {
@@ -19,22 +24,31 @@ public class App {
         FunnyTerminal terminal = new FunnyTerminal(
                 new TerminalProcess(BashUtils.runShellForOs(Runtime.getRuntime()))
         );
+        FileManager fm = new FileManager(terminal);
+        fm.goUp(); // .../.tray
+        PosixPath resources = fm.makeDir(PosixPath.ofPosix("resources"));
+        WorkingDirectory wd = new WorkingDirectory(fm);
 
         String os = terminal.eval("echo $(uname)");
         log.debug("logger.root.level={}", System.getProperty("logger.root.level"));
 
         if (Arrays.equals(args, List.of("audio", "on").toArray(new String[]{}))) {
+            String deviceID = getDeviceID(terminal, resources);
+
             if (os.equals("Linux")) {
-                terminal.eval("bluetoothctl connect \"00:02:5B:00:FF:00\"");
+                terminal.eval(String.format("bluetoothctl connect \"%s\"", deviceID));
             } else if (os.equals("Darwin")) {
-                terminal.eval("blueutil --connect 00:02:5B:00:FF:00");
+                terminal.eval(String.format("blueutil --connect %s", deviceID));
             }
             log.info("Audio Connected.");
         } else if (Arrays.equals(args, List.of("audio", "off").toArray(new String[]{}))) {
+            String deviceID = getDeviceID(terminal, resources);
+
             if (os.equals("Linux")) {
-                terminal.eval("bluetoothctl disconnect \"00:02:5B:00:FF:00\"");
+                terminal.eval(String.format("bluetoothctl disconnect \"%s\"", deviceID));
             } else if (os.equals("Darwin")) {
-                terminal.eval("blueutil --disconnect 00:02:5B:00:FF:00");
+                // 00:02:5B:00:FF:00
+                terminal.eval(String.format("blueutil --disconnect %s", deviceID));
             }
             log.info("Audio Disconnected.");
         } else if (Arrays.equals(args, List.of("shellenv").toArray(new String[]{}))) {
@@ -44,7 +58,68 @@ public class App {
                         Arrays.equals(args, List.of("-v").toArray(new String[]{}))
         ) {
             log.info("tray {}", System.getProperty("version"));
+        } else if (Arrays.equals(args, List.of("list", "bluetooth").toArray(new String[]{}))) {
+            if (os.equals("Linux")) {
+                terminal.eval("bluetoothctl devices")
+                        .lines()
+                        .forEach(log::info);
+            } else if (os.equals("Darwin")) {
+
+            }
+        } else if (Stream.of("use", "audio", "*").map(StringMatcher::exact).toList()
+                .equals(Arrays.stream(args).map(StringMatcher::escape).toList())) {
+            fm.go(resources);
+            PosixPath audioPrefix = PosixPath.ofPosix("audio");
+            fm.remove(audioPrefix.climb("current"));
+            terminal.eval(String.format("ln -s %s %s",
+                    fm.makeDir(audioPrefix.climb(args[2])),
+                    audioPrefix.climb("current")
+            ));
         }
 
+    }
+
+    private static String getDeviceID(FunnyTerminal terminal, PosixPath resources) {
+        PosixPath audioDevice = PosixPath.ofPosix(
+                terminal.eval(String.format("readlink %s", resources.climb("audio", "current")))
+        );
+        return audioDevice.toPath().getFileName().toString();
+    }
+
+    public static class StringMatcher {
+        public static final StringMatcher ANY = new StringMatcher(true, "*");
+        private final boolean isWild;
+        private final String template;
+
+        private StringMatcher(boolean isWild, String template) {
+            this.isWild = isWild;
+            this.template = template;
+        }
+
+        public static StringMatcher exact(String s) {
+            if (s.equals("*")) {
+                return ANY;
+            }
+            return new StringMatcher(false, s);
+        }
+
+        public static StringMatcher escape(String s) {
+            return new StringMatcher(false, s);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            StringMatcher that = (StringMatcher) o;
+            if (isWild || that.isWild) {
+                return true;
+            }
+            return Objects.equals(template, that.template);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode("*");
+        }
     }
 }

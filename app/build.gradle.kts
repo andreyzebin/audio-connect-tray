@@ -24,7 +24,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // This dependency is used by the application.
-    implementation("io.github.andreyzebin:java-bash:2.0.0")
+    implementation("io.github.andreyzebin:java-bash:2.1.0")
 
 
     implementation("ch.qos.logback:logback-core:$logbackVersion")
@@ -45,7 +45,7 @@ application {
     // Define the main class for the application.
     mainClass = "org.example.App"
     applicationDefaultJvmArgs = listOf(
-        "-Dlogger.root.level=INFO",
+        "-Dlogger.root.level=DEBUG",
         "-Dversion=${version}")
 }
 

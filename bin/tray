@@ -58,6 +58,10 @@ elif [ "$#" -eq 2 ]; then
     cd ${SCRIPTPATH}/../repository
     ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2"
     cd ${curdir}
+elif [ "$#" -eq 3 ]; then
+    cd ${SCRIPTPATH}/../repository
+    ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2 $3"
+    cd ${curdir}
 else
     echo "Too many arguments"
     echo "Usage: tray <arg1> <arg2>"
