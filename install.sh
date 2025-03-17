@@ -141,6 +141,46 @@ else
   abort "Tray is only supported on macOS and Linux."
 fi
 
+# Required installation paths. To install elsewhere (which is unsupported)
+# you can untar https://github.com/Homebrew/brew/tarball/master
+# anywhere you like.
+if [[ -n "${HOMEBREW_ON_MACOS-}" ]]
+then
+  UNAME_MACHINE="$(/usr/bin/uname -m)"
+
+  if [[ "${UNAME_MACHINE}" == "arm64" ]]
+  then
+    # On ARM macOS, this script installs to /opt/homebrew only
+    TRAY_HOME="~/.tray"
+  else
+    # On Intel macOS, this script installs to /usr/local only
+    TRAY_HOME="~/.tray"
+  fi
+
+  STAT_PRINTF=("/usr/bin/stat" "-f")
+  PERMISSION_FORMAT="%A"
+  CHOWN=("/usr/sbin/chown")
+  CHGRP=("/usr/bin/chgrp")
+  GROUP="admin"
+  TOUCH=("/usr/bin/touch")
+  INSTALL=("/usr/bin/install" -d -o "root" -g "wheel" -m "0755")
+else
+  UNAME_MACHINE="$(uname -m)"
+
+  # On Linux, this script installs to ~/.tray only
+  TRAY_HOME="~/.tray"
+
+  STAT_PRINTF=("/usr/bin/stat" "--printf")
+  PERMISSION_FORMAT="%a"
+  CHOWN=("/bin/chown")
+  CHGRP=("/bin/chgrp")
+  GROUP="$(id -gn)"
+  TOUCH=("/bin/touch")
+  INSTALL=("/usr/bin/install" -d -o "${USER}" -g "${GROUP}" -m "0755")
+fi
+CHMOD=("/bin/chmod")
+MKDIR=("/bin/mkdir" "-p")
+
 execute() {
   if ! "$@"
   then
@@ -167,6 +207,11 @@ retry() {
   fi
 }
 
+# TODO: bump version when new macOS is released or announced
+MACOS_NEWEST_UNSUPPORTED="16.0"
+# TODO: bump version when new macOS is released
+MACOS_OLDEST_SUPPORTED="13.0"
+
 # For Tray on Linux
 REQUIRED_CURL_VERSION=7.41.0
 REQUIRED_GIT_VERSION=2.7.0
@@ -188,6 +233,17 @@ version_ge() {
 }
 version_lt() {
   [[ "${1%.*}" -lt "${2%.*}" ]] || [[ "${1%.*}" -eq "${2%.*}" && "${1#*.}" -lt "${2#*.}" ]]
+}
+
+check_run_command_as_root() {
+  [[ "${EUID:-${UID}}" == "0" ]] || return
+
+  # Allow Azure Pipelines/GitHub Actions/Docker/Concourse/Kubernetes to do everything as root (as it's normal there)
+  [[ -f /.dockerenv ]] && return
+  [[ -f /run/.containerenv ]] && return
+  [[ -f /proc/1/cgroup ]] && grep -E "azpl_job|actions_job|docker|garden|kubepods" -q /proc/1/cgroup && return
+
+  abort "Don't run this as root!"
 }
 
 test_curl() {
@@ -254,6 +310,136 @@ find_tool() {
   done < <(which -a "$1")
 }
 
+# -------
+
+unset HAVE_SUDO_ACCESS # unset this from the environment
+
+have_sudo_access() {
+  if [[ ! -x "/usr/bin/sudo" ]]
+  then
+    return 1
+  fi
+
+  local -a SUDO=("/usr/bin/sudo")
+  if [[ -n "${SUDO_ASKPASS-}" ]]
+  then
+    SUDO+=("-A")
+  elif [[ -n "${NONINTERACTIVE-}" ]]
+  then
+    SUDO+=("-n")
+  fi
+
+  if [[ -z "${HAVE_SUDO_ACCESS-}" ]]
+  then
+    if [[ -n "${NONINTERACTIVE-}" ]]
+    then
+      "${SUDO[@]}" -l mkdir &>/dev/null
+    else
+      "${SUDO[@]}" -v && "${SUDO[@]}" -l mkdir &>/dev/null
+    fi
+    HAVE_SUDO_ACCESS="$?"
+  fi
+
+  if [[ -n "${HOMEBREW_ON_MACOS-}" ]] && [[ "${HAVE_SUDO_ACCESS}" -ne 0 ]]
+  then
+    abort "Need sudo access on macOS (e.g. the user ${USER} needs to be an Administrator)!"
+  fi
+
+  return "${HAVE_SUDO_ACCESS}"
+}
+
+# shellcheck disable=SC2016
+ohai 'Checking for `sudo` access (which may request your password)...'
+
+if [[ -n "${TRAY_ON_MACOS-}" ]]
+then
+  [[ "${EUID:-${UID}}" == "0" ]] || have_sudo_access
+elif ! [[ -w "${TRAY_HOME}" ]] &&
+     ! [[ -w "/home" ]] &&
+     ! have_sudo_access
+then
+  abort "$(
+    cat <<EOABORT
+Insufficient permissions to install Tray to "${TRAY_HOME}" (the default prefix).
+EOABORT
+  )"
+fi
+
+check_run_command_as_root
+
+if [[ -d "${TRAY_HOME}" && ! -x "${TRAY_HOME}" ]]
+then
+  abort "$(
+    cat <<EOABORT
+The Tray home ${tty_underline}${TRAY_HOME}${tty_reset} exists but is not searchable.
+If this is not intentional, please restore the default permissions and
+try running the installer again:
+    sudo chmod 775 ${TRAY_HOME}
+EOABORT
+  )"
+fi
+
+if [[ -n "${TRAY_ON_MACOS-}" ]]
+then
+  # On macOS, support 64-bit Intel and ARM
+  if [[ "${UNAME_MACHINE}" != "arm64" ]] && [[ "${UNAME_MACHINE}" != "x86_64" ]]
+  then
+    abort "Tray is only supported on Intel and ARM processors!"
+  fi
+else
+  # On Linux, support only 64-bit Intel
+  if [[ "${UNAME_MACHINE}" == "aarch64" ]]
+  then
+    abort "$(
+      cat <<EOABORT
+Tray on Linux is not supported on ARM processors.
+  ${tty_underline}https://docs...${tty_reset}
+EOABORT
+    )"
+  elif [[ "${UNAME_MACHINE}" != "x86_64" ]]
+  then
+    abort "Tray on Linux is only supported on Intel processors!"
+  fi
+fi
+
+if [[ -n "${TRAY_ON_MACOS-}" ]]
+then
+  macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
+  if version_lt "${macos_version}" "10.7"
+  then
+    abort "$(
+      cat <<EOABORT
+Your Mac OS X version is too old. See:
+  ${tty_underline}https://githu...${tty_reset}
+EOABORT
+    )"
+  elif version_lt "${macos_version}" "10.11"
+  then
+    abort "Your OS X version is too old."
+  elif version_ge "${macos_version}" "${MACOS_NEWEST_UNSUPPORTED}" ||
+       version_lt "${macos_version}" "${MACOS_OLDEST_SUPPORTED}"
+  then
+    who="We"
+    what=""
+    if version_ge "${macos_version}" "${MACOS_NEWEST_UNSUPPORTED}"
+    then
+      what="pre-release version"
+    else
+      who+=" (and Apple)"
+      what="old version"
+    fi
+    ohai "You are using macOS ${macos_version}."
+    ohai "${who} do not provide support for this ${what}."
+
+    echo "$(
+      cat <<EOS
+This installation may not succeed.
+EOS
+    )
+" | tr -d "\\"
+  fi
+fi
+
 USABLE_GIT=/usr/bin/git
 if [[ -n "${TRAY_ON_LINUX-}" ]]
 then
@@ -313,6 +499,8 @@ export USABLE_GRADLE=./gradlew
 export TRAY_HOME=~/.tray
 ohai "This script will install:"
 echo "${TRAY_HOME}/repository/"
+echo "${TRAY_HOME}/bin/tray"
+echo "/usr/local/bin/tray -> ${TRAY_HOME}/bin/tray"
 
 
 mkdir -p ${TRAY_HOME}
