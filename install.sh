@@ -506,7 +506,7 @@ echo "/usr/local/bin/tray -> ${TRAY_HOME}/bin/tray"
 (return 0 2>/dev/null) && SOURCED=1 || SOURCED=0
 
 curdir=$(pwd)
-(
+{
 # this is the 'finally' statement
 echo "finally this"
 mkdir -p ${TRAY_HOME}
@@ -521,7 +521,7 @@ execute "${USABLE_GIT}" pull
 cp -r bin ${TRAY_HOME}/
 chmod u+x ${TRAY_HOME}/bin/tray
 ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
-) || (
+} || {
   echo "Installation failed!"
   cd $curdir
   if [ "$SOURCED" == "1" ]; then
@@ -529,7 +529,7 @@ ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
     return 1;
   fi
   exit 1;
-)
+}
 cd $curdir
 echo "Installation successful!"
 
