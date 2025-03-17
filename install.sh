@@ -528,7 +528,7 @@ ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
     echo "Its sourced - using return instead of exit"
     return 1;
   fi
-  exit 1
+  exit 1;
 )
 cd $curdir
 echo "Installation successful!"
