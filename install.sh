@@ -517,6 +517,7 @@ if [ ! -d repository ]; then
 fi
 cd repository
 execute "${USABLE_GIT}" pull
+execute "${USABLE_GRADLE}" clean app:run --args='--version'
 
 cp -r bin ${TRAY_HOME}/
 chmod u+x ${TRAY_HOME}/bin/tray
