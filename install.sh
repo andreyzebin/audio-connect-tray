@@ -511,9 +511,11 @@ curdir=$(pwd)
     cd ${TRAY_HOME}
     if [ ! -d repository ]; then
       mkdir repository
+      ohai "Downloading tray sources..."
       execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
     fi
     cd repository
+    ohai "Updating tray sources..."
     execute "${USABLE_GIT}" pull
 
     cp -r bin ${TRAY_HOME}/
@@ -527,8 +529,8 @@ curdir=$(pwd)
       sudo ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
     fi
 
-    echo "Checking tray installation..."
-    echo "Executing: 'tray --version'..."
+    ohai "Checking installation result..."
+    ohai "Executing: 'tray --version'..."
     tray --version
 } || {
     echo "Installation failed!"
@@ -539,5 +541,5 @@ curdir=$(pwd)
     exit 1;
 }
 cd $curdir
-echo "Installation successful!"
+ohai "Installation successful!"
 
