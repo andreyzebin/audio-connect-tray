@@ -507,28 +507,36 @@ echo "/usr/local/bin/tray -> ${TRAY_HOME}/bin/tray"
 
 curdir=$(pwd)
 {
-# this is the 'finally' statement
-echo "finally this"
-mkdir -p ${TRAY_HOME}
-cd ${TRAY_HOME}
-if [ ! -d repository ]; then
-  mkdir repository
-  execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
-fi
-cd repository
-execute "${USABLE_GIT}" pull
-execute "${USABLE_GRADLE}" clean app:run --args='--version'
+    mkdir -p ${TRAY_HOME}
+    cd ${TRAY_HOME}
+    if [ ! -d repository ]; then
+      mkdir repository
+      execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
+    fi
+    cd repository
+    execute "${USABLE_GIT}" pull
 
-cp -r bin ${TRAY_HOME}/
-chmod u+x ${TRAY_HOME}/bin/tray
-ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
+    cp -r bin ${TRAY_HOME}/
+    chmod u+x ${TRAY_HOME}/bin/tray
+
+    if [ -f /usr/local/bin/tray ]; then
+      if [ ! $(readlink /usr/local/bin/tray)==${TRAY_HOME}/bin/tray ]; then
+        sudo ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
+      fi
+    else
+      sudo ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
+    fi
+
+    echo "Checking tray installation..."
+    echo "Executing: 'tray --version'..."
+    tray --version
 } || {
-  echo "Installation failed!"
-  cd $curdir
-  if [ "$SOURCED" == "1" ]; then
-    return 1;
-  fi
-  exit 1;
+    echo "Installation failed!"
+    cd $curdir
+    if [ "$SOURCED" == "1" ]; then
+      return 1;
+    fi
+    exit 1;
 }
 cd $curdir
 echo "Installation successful!"
