@@ -25,6 +25,7 @@ public class App {
                 new TerminalProcess(BashUtils.runShellForOs(Runtime.getRuntime()))
         );
         FileManager fm = new FileManager(terminal);
+        fm.goUp(); // .../.tray/repository
         fm.goUp(); // .../.tray
         PosixPath resources = fm.makeDir(PosixPath.ofPosix("resources"));
         WorkingDirectory wd = new WorkingDirectory(fm);
