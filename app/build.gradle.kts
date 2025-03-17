@@ -8,6 +8,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    id("io.freefair.lombok") version "8.12.2"
 }
 
 var logbackVersion = "1.5.6"
@@ -34,13 +35,14 @@ dependencies {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
 application {
     // Define the main class for the application.
     mainClass = "org.example.App"
+    applicationDefaultJvmArgs = listOf("-Dlogger.root.level=INFO")
 }
 
 tasks.named<Test>("test") {

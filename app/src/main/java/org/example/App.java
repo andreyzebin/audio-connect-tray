@@ -6,10 +6,12 @@ package org.example;
 import io.github.zebin.javabash.frontend.FunnyTerminal;
 import io.github.zebin.javabash.process.TerminalProcess;
 import io.github.zebin.javabash.sandbox.BashUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 public class App {
 
 
@@ -19,18 +21,23 @@ public class App {
         );
 
         String os = terminal.eval("echo $(uname)");
+
+        log.debug("logger.root.level={}", System.getProperty("logger.root.level"));
+
         if (Arrays.equals(args, List.of("audio", "on").toArray(new String[]{}))) {
             if (os.equals("Linux")) {
                 terminal.eval("bluetoothctl connect \"00:02:5B:00:FF:00\"");
             } else if (os.equals("Darwin")) {
                 terminal.eval("blueutil --connect 00:02:5B:00:FF:00");
             }
+            log.info("Audio Connected.");
         } else if (Arrays.equals(args, List.of("audio", "off").toArray(new String[]{}))) {
             if (os.equals("Linux")) {
                 terminal.eval("bluetoothctl disconnect \"00:02:5B:00:FF:00\"");
             } else if (os.equals("Darwin")) {
                 terminal.eval("blueutil --disconnect 00:02:5B:00:FF:00");
             }
+            log.info("Audio Disconnected.");
         } else if (Arrays.equals(args, List.of("shellenv").toArray(new String[]{}))) {
             terminal.eval("echo TRAY_HOME=${TRAY_HOME}");
         }

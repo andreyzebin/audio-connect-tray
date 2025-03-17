@@ -41,7 +41,7 @@
   </appender>
 
 
-  <root level="debug">
+  <root level="${logger.root.level}">
     <appender-ref ref="STDOUT"/>
     <appender-ref ref="bashSTDOUT"/>
   </root>

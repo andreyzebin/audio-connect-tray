@@ -52,11 +52,11 @@ fi
 
 if [ "$#" -eq 1 ]; then
     cd ${SCRIPTPATH}/../repository
-    ./gradlew clean app:run --args="$1"
+    ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1"
     cd ${curdir}
 elif [ "$#" -eq 2 ]; then
     cd ${SCRIPTPATH}/../repository
-    ./gradlew clean app:run --args="$1 $2"
+    ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2"
     cd ${curdir}
 else
     echo "Too many arguments"
