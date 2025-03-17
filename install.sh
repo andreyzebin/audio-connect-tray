@@ -520,7 +520,7 @@ curdir=$(pwd)
     chmod u+x ${TRAY_HOME}/bin/tray
 
     if [ -f /usr/local/bin/tray ]; then
-      if [ ! $(readlink /usr/local/bin/tray)==${TRAY_HOME}/bin/tray ]; then
+      if [ ! "$(readlink /usr/local/bin/tray)" == ${TRAY_HOME}/bin/tray ]; then
         sudo ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
       fi
     else
