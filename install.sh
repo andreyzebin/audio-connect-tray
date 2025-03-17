@@ -68,7 +68,7 @@ chomp() {
   printf "%s" "${1/"$'\n'"/}"
 }
 
-ohai() {
+logTitleL1() {
   printf "${tty_blue}==>${tty_bold} %s${tty_reset}\n" "$(shell_join "$@")"
 }
 
@@ -119,7 +119,7 @@ then
     fi
   fi
 else
-  ohai 'Running in non-interactive mode because `$NONINTERACTIVE` is set.'
+  logTitleL1 'Running in non-interactive mode because `$NONINTERACTIVE` is set.'
 fi
 
 # USER isn't always set so provide a fall back for the installer and subprocesses.
@@ -349,7 +349,7 @@ have_sudo_access() {
 }
 
 # shellcheck disable=SC2016
-ohai 'Checking for `sudo` access (which may request your password)...'
+logTitleL1 'Checking for `sudo` access (which may request your password)...'
 
 if [[ -n "${TRAY_ON_MACOS-}" ]]
 then
@@ -428,8 +428,8 @@ EOABORT
       who+=" (and Apple)"
       what="old version"
     fi
-    ohai "You are using macOS ${macos_version}."
-    ohai "${who} do not provide support for this ${what}."
+    logTitleL1 "You are using macOS ${macos_version}."
+    logTitleL1 "${who} do not provide support for this ${what}."
 
     echo "$(
       cat <<EOS
@@ -465,7 +465,7 @@ EOABORT
   if [[ "${USABLE_GIT}" != /usr/bin/git ]]
   then
     export TRAY_GIT_PATH="${USABLE_GIT}"
-    ohai "Found Git: ${TRAY_GIT_PATH}"
+    logTitleL1 "Found Git: ${TRAY_GIT_PATH}"
   fi
 fi
 
@@ -491,13 +491,13 @@ EOABORT
   elif [[ "${USABLE_CURL}" != /usr/bin/curl ]]
   then
     export TRAY_CURL_PATH="${USABLE_CURL}"
-    ohai "Found cURL: ${TRAY_CURL_PATH}"
+    logTitleL1 "Found cURL: ${TRAY_CURL_PATH}"
   fi
 fi
 
 export USABLE_GRADLE=./gradlew
 export TRAY_HOME=~/.tray
-ohai "This script will install:"
+logTitleL1 "This script will install:"
 echo "${TRAY_HOME}/repository/"
 echo "${TRAY_HOME}/bin/tray"
 echo "/usr/local/bin/tray -> ${TRAY_HOME}/bin/tray"
@@ -511,11 +511,11 @@ curdir=$(pwd)
     cd ${TRAY_HOME}
     if [ ! -d repository ]; then
       mkdir repository
-      ohai "Downloading tray sources..."
+      logTitleL1 "Downloading tray sources..."
       execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
     fi
     cd repository
-    ohai "Updating tray sources..."
+    logTitleL1 "Updating tray sources..."
     execute "${USABLE_GIT}" pull
 
     cp -r bin ${TRAY_HOME}/
@@ -529,8 +529,8 @@ curdir=$(pwd)
       sudo ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
     fi
 
-    ohai "Checking installation result..."
-    ohai "Executing: 'tray --version'..."
+    logTitleL1 "Checking installation result..."
+    logTitleL1 "Executing: 'tray --version'..."
     tray --version
 } || {
     echo "Installation failed!"
@@ -541,5 +541,5 @@ curdir=$(pwd)
     exit 1;
 }
 cd $curdir
-ohai "Installation successful!"
+logTitleL1 "Installation successful!"
 
