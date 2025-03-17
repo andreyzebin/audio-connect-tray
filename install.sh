@@ -231,7 +231,7 @@ which() {
   type -P "$@"
 }
 
-# Search PATH for the specified program that satisfies Homebrew requirements
+# Search PATH for the specified program that satisfies Tray requirements
 # function which is set above
 # shellcheck disable=SC2230
 find_tool() {
