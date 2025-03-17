@@ -21,7 +21,6 @@ public class App {
         );
 
         String os = terminal.eval("echo $(uname)");
-
         log.debug("logger.root.level={}", System.getProperty("logger.root.level"));
 
         if (Arrays.equals(args, List.of("audio", "on").toArray(new String[]{}))) {
@@ -40,8 +39,12 @@ public class App {
             log.info("Audio Disconnected.");
         } else if (Arrays.equals(args, List.of("shellenv").toArray(new String[]{}))) {
             terminal.eval("echo TRAY_HOME=${TRAY_HOME}");
+        } else if (
+                Arrays.equals(args, List.of("--version").toArray(new String[]{})) ||
+                        Arrays.equals(args, List.of("-v").toArray(new String[]{}))
+        ) {
+            log.info("tray {}", System.getProperty("version"));
         }
-
 
     }
 }

@@ -15,6 +15,8 @@ var logbackVersion = "1.5.6"
 var slf4jVersion = "2.0.13"
 var junitVersion = "5.10.1"
 
+var version = "0.0.1"
+
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
@@ -42,7 +44,9 @@ java {
 application {
     // Define the main class for the application.
     mainClass = "org.example.App"
-    applicationDefaultJvmArgs = listOf("-Dlogger.root.level=INFO")
+    applicationDefaultJvmArgs = listOf(
+        "-Dlogger.root.level=INFO",
+        "-Dversion=${version}")
 }
 
 tasks.named<Test>("test") {
