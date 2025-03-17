@@ -502,13 +502,8 @@ echo "${TRAY_HOME}/repository/"
 echo "${TRAY_HOME}/bin/tray"
 echo "/usr/local/bin/tray -> ${TRAY_HOME}/bin/tray"
 
-# check to see if this file is being run or sourced from another script
-_is_sourced() {
-    # https://unix.stackexchange.com/a/215279
-    [ "${#FUNCNAME[@]}" -ge 2 ] \
-        && [ "${FUNCNAME[0]}" = '_is_sourced' ] \
-        && [ "${FUNCNAME[1]}" = 'source' ]
-}
+# store if we're sourced or not in a variable
+(return 0 2>/dev/null) && SOURCED=1 || SOURCED=0
 
 curdir=$(pwd)
 (
@@ -529,9 +524,9 @@ ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
 ) || (
   echo "Installation failed!"
   cd $curdir
-  if [ _is_sourced ]; then
-    echo "Its sourced - using return instead exit"
-    return;
+  if [ "$SOURCED" == "1" ]; then
+    echo "Its sourced - using return instead of exit"
+    return 1;
   fi
   exit 1
 )
