@@ -525,7 +525,6 @@ ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
   echo "Installation failed!"
   cd $curdir
   if [ "$SOURCED" == "1" ]; then
-    echo "Its sourced - using return instead of exit"
     return 1;
   fi
   exit 1;
