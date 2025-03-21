@@ -499,7 +499,7 @@ export USABLE_GRADLE=./gradlew
 export TRAY_HOME=~/.tray
 export LOCAL_APPS_PATH=/usr/local/bin
 
-if [[ -n  ${TRAY_ON_MINGW} ]]; then
+if [[ -n ${TRAY_ON_MINGW-} ]]; then
   export LOCAL_APPS_PATH=/mingw64/bin
 fi
 
