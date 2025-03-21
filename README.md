@@ -40,3 +40,15 @@ tray use audio 00:02:5B:00:FF:00  # specify one as a home audio
 tray audio on                     # connect home audio
 tray audio off                    # disconnect home audio
 ```
+
+Bluetoothctl cheatsheet
+```
+sudo bluetoothctl
+[bluetooth]# list
+[bluetooth]# select <MAC-address>
+[bluetooth]# power on
+[bluetooth]# scan on
+[bluetooth]# scan off
+[bluetooth]# devices
+```
+Also: https://walkonthebyteside.com/blog/2023-02-15-bluetooth-monitoring-command-linux/

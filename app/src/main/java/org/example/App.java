@@ -27,6 +27,7 @@ public class App {
         FileManager fm = new FileManager(terminal);
         fm.goUp(); // .../.tray/repository
         fm.goUp(); // .../.tray
+        PosixPath home = fm.getCurrent();
         PosixPath resources = fm.makeDir(PosixPath.ofPosix("resources"));
         WorkingDirectory wd = new WorkingDirectory(fm);
 
@@ -53,7 +54,7 @@ public class App {
             }
             log.info("Audio Disconnected.");
         } else if (Arrays.equals(args, List.of("shellenv").toArray(new String[]{}))) {
-            terminal.eval("echo TRAY_HOME=${TRAY_HOME}");
+            terminal.eval(String.format("export TRAY_HOME=\"%s\"", home));
         } else if (
                 Arrays.equals(args, List.of("--version").toArray(new String[]{})) ||
                         Arrays.equals(args, List.of("-v").toArray(new String[]{}))
@@ -65,17 +66,23 @@ public class App {
                         .lines()
                         .forEach(log::info);
             } else if (os.equals("Darwin")) {
-
+                terminal.eval("blueutil --inquiry")
+                        .lines()
+                        .forEach(log::info);
+                ;
             }
         } else if (Stream.of("use", "audio", "*").map(StringMatcher::exact).toList()
                 .equals(Arrays.stream(args).map(StringMatcher::escape).toList())) {
             fm.go(resources);
             PosixPath audioPrefix = PosixPath.ofPosix("audio");
             fm.remove(audioPrefix.climb("current"));
-            terminal.eval(String.format("ln -s %s %s",
-                    fm.makeDir(audioPrefix.climb(args[2])),
-                    audioPrefix.climb("current")
-            ));
+            terminal.eval(
+                    String.format(
+                            "ln -s %s %s",
+                            fm.makeDir(audioPrefix.climb(args[2])),
+                            audioPrefix.climb("current")
+                    )
+            );
         }
 
     }
