@@ -137,23 +137,22 @@ then
 elif [[ "${OS}" == "Darwin" ]]
 then
   TRAY_ON_MACOS=1
+elif [[ "${OS}" == MINGW* ]]
+then
+  TRAY_ON_MINGW=1
 else
   abort "Tray is only supported on macOS and Linux."
 fi
 
-# Required installation paths. To install elsewhere (which is unsupported)
-# you can untar https://github.com/Homebrew/brew/tarball/master
-# anywhere you like.
-if [[ -n "${HOMEBREW_ON_MACOS-}" ]]
+# Required installation paths.
+if [[ -n "${TRAY_ON_MACOS-}" ]]
 then
   UNAME_MACHINE="$(/usr/bin/uname -m)"
 
   if [[ "${UNAME_MACHINE}" == "arm64" ]]
   then
-    # On ARM macOS, this script installs to /opt/homebrew only
     TRAY_HOME="~/.tray"
   else
-    # On Intel macOS, this script installs to /usr/local only
     TRAY_HOME="~/.tray"
   fi
 
@@ -163,7 +162,7 @@ then
   CHGRP=("/usr/bin/chgrp")
   GROUP="admin"
   TOUCH=("/usr/bin/touch")
-  INSTALL=("/usr/bin/install" -d -o "root" -g "wheel" -m "0755")
+#  INSTALL=("/usr/bin/install" -d -o "root" -g "wheel" -m "0755")
 else
   UNAME_MACHINE="$(uname -m)"
 
@@ -174,9 +173,9 @@ else
   PERMISSION_FORMAT="%a"
   CHOWN=("/bin/chown")
   CHGRP=("/bin/chgrp")
-  GROUP="$(id -gn)"
+#  GROUP="$(id -gn)"
   TOUCH=("/bin/touch")
-  INSTALL=("/usr/bin/install" -d -o "${USER}" -g "${GROUP}" -m "0755")
+#  INSTALL=("/usr/bin/install" -d -o "${USER}" -g "${GROUP}" -m "0755")
 fi
 CHMOD=("/bin/chmod")
 MKDIR=("/bin/mkdir" "-p")
@@ -340,7 +339,7 @@ have_sudo_access() {
     HAVE_SUDO_ACCESS="$?"
   fi
 
-  if [[ -n "${HOMEBREW_ON_MACOS-}" ]] && [[ "${HAVE_SUDO_ACCESS}" -ne 0 ]]
+  if [[ -n "${TRAY_ON_MACOS-}" ]] && [[ "${HAVE_SUDO_ACCESS}" -ne 0 ]]
   then
     abort "Need sudo access on macOS (e.g. the user ${USER} needs to be an Administrator)!"
   fi
@@ -349,8 +348,8 @@ have_sudo_access() {
 }
 
 # shellcheck disable=SC2016
-logTitleL1 'Checking for `sudo` access (which may request your password)...'
-
+# logTitleL1 'Checking for `sudo` access (which may request your password)...'
+: '
 if [[ -n "${TRAY_ON_MACOS-}" ]]
 then
   [[ "${EUID:-${UID}}" == "0" ]] || have_sudo_access
@@ -364,8 +363,9 @@ Insufficient permissions to install Tray to "${TRAY_HOME}" (the default prefix).
 EOABORT
   )"
 fi
+'
 
-check_run_command_as_root
+# check_run_command_as_root
 
 if [[ -d "${TRAY_HOME}" && ! -x "${TRAY_HOME}" ]]
 then
@@ -441,7 +441,7 @@ EOS
 fi
 
 USABLE_GIT=/usr/bin/git
-if [[ -n "${TRAY_ON_LINUX-}" ]]
+if [[ -n "${TRAY_ON_LINUX-}" || -n "${TRAY_ON_MINGW-}" ]]
 then
   USABLE_GIT="$(find_tool git)"
   if [[ -z "$(command -v git)" ]]
@@ -477,7 +477,7 @@ You must install cURL before installing Tray. See:
   ${tty_underline}https://docs${tty_reset}
 EOABORT
   )"
-elif [[ -n "${TRAY_ON_LINUX-}" ]]
+elif [[ -n "${TRAY_ON_LINUX-}" || -n "${TRAY_ON_MINGW-}" ]]
 then
   USABLE_CURL="$(find_tool curl)"
   if [[ -z "${USABLE_CURL}" ]]
@@ -497,10 +497,18 @@ fi
 
 export USABLE_GRADLE=./gradlew
 export TRAY_HOME=~/.tray
+export LOCAL_APPS_PATH=/usr/local/bin
+
+if [[ -n  ${TRAY_ON_MINGW} ]]; then
+  export LOCAL_APPS_PATH=/mingw64/bin
+fi
+
 logTitleL1 "This script will install:"
+
+
 echo "${TRAY_HOME}/repository/"
 echo "${TRAY_HOME}/bin/tray"
-echo "/usr/local/bin/tray -> ${TRAY_HOME}/bin/tray"
+echo "${LOCAL_APPS_PATH}/tray -> ${TRAY_HOME}/bin/tray"
 
 # store if we're sourced or not in a variable
 (return 0 2>/dev/null) && SOURCED=1 || SOURCED=0
@@ -521,12 +529,12 @@ curdir=$(pwd)
     cp -r bin ${TRAY_HOME}/
     chmod u+x ${TRAY_HOME}/bin/tray
 
-    if [ -f /usr/local/bin/tray ]; then
-      if [ ! "$(readlink /usr/local/bin/tray)" == ${TRAY_HOME}/bin/tray ]; then
-        sudo ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
+    if [ -f ${LOCAL_APPS_PATH}/tray ]; then
+      if [ ! "$(readlink ${LOCAL_APPS_PATH}/tray)" == ${TRAY_HOME}/bin/tray ]; then
+        sudo ln -s ${TRAY_HOME}/bin/tray ${LOCAL_APPS_PATH}/tray
       fi
     else
-      sudo ln -s ${TRAY_HOME}/bin/tray /usr/local/bin/tray
+      sudo ln -s ${TRAY_HOME}/bin/tray ${LOCAL_APPS_PATH}/tray
     fi
 
     logTitleL1 "Checking installation result..."
