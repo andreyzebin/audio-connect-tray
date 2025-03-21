@@ -526,6 +526,10 @@ curdir=$(pwd)
     logTitleL1 "Updating tray sources..."
     execute "${USABLE_GIT}" pull
 
+    logTitleL1 "Making classes..."
+    execute "${USABLE_GRADLE}" clean build
+
+
     cp -r bin ${TRAY_HOME}/
     chmod u+x ${TRAY_HOME}/bin/tray
 
