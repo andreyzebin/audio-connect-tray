@@ -424,6 +424,7 @@ if [[ -n "${JAVA_HOME-}" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
     abort "JAVA_HOME is set to JRE. But JDK is required"
   fi
   JAVA_VER=$($USABLE_JAVAC -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
+  echo "JDK version is $JAVA_VER"
   if [ ! "$JAVA_VER" -ge 170 ]; then
     abort "Minimum JDK is 17!"
   fi
