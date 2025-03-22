@@ -476,20 +476,20 @@ currentDir=$(pwd)
     logTitleL1 "Updating tray sources..."
     execute "${USABLE_GIT}" pull
 
-    logTitleL1 "Testing if sources buildable..."
-    execute "${USABLE_GRADLE}" clean build
-
     cp -rf bin "${TRAY_HOME}"/
     chmod u+x "${TRAY_HOME}"/bin/tray
 
     if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
       if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
-        ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+        ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
       fi
     else
       mkdir -p "${LOCAL_APPS_PATH}"
-      ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+      ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
     fi
+
+    logTitleL1 "Testing if sources buildable..."
+    execute "${USABLE_GRADLE}" clean build
 
     logTitleL1 "Checking installation result..."
     logTitleL1 "Executing: 'tray --version'..."
