@@ -489,9 +489,8 @@ currentDir=$(pwd)
     logTitleL1 "Executing: 'tray --version'..."
     tray --version
 } || {
-    echo "Installation failed!"
     cd "$currentDir"
-    abort
+    abort "Installation failed!"
 }
 cd "$currentDir"
 logTitleL1 "Installation successful!"
