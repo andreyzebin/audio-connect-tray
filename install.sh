@@ -487,6 +487,7 @@ currentDir=$(pwd)
         ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
       fi
     else
+      mkdir -p "${LOCAL_APPS_PATH}"
       ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
     fi
 
@@ -499,3 +500,5 @@ currentDir=$(pwd)
 }
 cd "$currentDir"
 logTitleL1 "Installation successful!"
+
+# export JAVA_HOME=/c/Users/THINKPAD/.gradle/jdks/eclipse_adoptium-17-amd64-windows.2
