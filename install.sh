@@ -1,14 +1,15 @@
 #!/bin/bash -eu
-
-# We don't need return codes for "$(command)", only stdout is needed.
-# Allow `[[ -n "$(command)" ]]`, `func "$(command)"`, pipes, etc.
-# shellcheck disable=SC2312
-
 set -u
+
+# store if we're sourced or not in a variable
+(return 0 2>/dev/null) && SOURCED=1 || SOURCED=0
 
 abort() {
   printf "%s\n" "$@" >&2
-  exit 1
+  if [ "$SOURCED" == "1" ]; then
+    return 1;
+  fi
+  exit 1;
 }
 
 # Fail fast with a concise message when not using bash
@@ -144,41 +145,8 @@ else
   abort "Tray is only supported on macOS and Linux."
 fi
 
-# Required installation paths.
-if [[ -n "${TRAY_ON_MACOS-}" ]]
-then
-  UNAME_MACHINE="$(/usr/bin/uname -m)"
-
-  if [[ "${UNAME_MACHINE}" == "arm64" ]]
-  then
-    TRAY_HOME="~/.tray"
-  else
-    TRAY_HOME="~/.tray"
-  fi
-
-  STAT_PRINTF=("/usr/bin/stat" "-f")
-  PERMISSION_FORMAT="%A"
-  CHOWN=("/usr/sbin/chown")
-  CHGRP=("/usr/bin/chgrp")
-  GROUP="admin"
-  TOUCH=("/usr/bin/touch")
-#  INSTALL=("/usr/bin/install" -d -o "root" -g "wheel" -m "0755")
-else
-  UNAME_MACHINE="$(uname -m)"
-
-  # On Linux, this script installs to ~/.tray only
-  TRAY_HOME="~/.tray"
-
-  STAT_PRINTF=("/usr/bin/stat" "--printf")
-  PERMISSION_FORMAT="%a"
-  CHOWN=("/bin/chown")
-  CHGRP=("/bin/chgrp")
-#  GROUP="$(id -gn)"
-  TOUCH=("/bin/touch")
-#  INSTALL=("/usr/bin/install" -d -o "${USER}" -g "${GROUP}" -m "0755")
-fi
-CHMOD=("/bin/chmod")
-MKDIR=("/bin/mkdir" "-p")
+# shellcheck disable=SC2116
+TRAY_HOME=$(echo ~/.tray)
 
 execute() {
   if ! "$@"
@@ -369,14 +337,7 @@ fi
 
 if [[ -d "${TRAY_HOME}" && ! -x "${TRAY_HOME}" ]]
 then
-  abort "$(
-    cat <<EOABORT
-The Tray home ${tty_underline}${TRAY_HOME}${tty_reset} exists but is not searchable.
-If this is not intentional, please restore the default permissions and
-try running the installer again:
-    sudo chmod 775 ${TRAY_HOME}
-EOABORT
-  )"
+  abort "The Tray home ${tty_underline}${TRAY_HOME}${tty_reset} exists but is not searchable. Use sudo chmod 775 ${TRAY_HOME}"
 fi
 
 if [[ -n "${TRAY_ON_MACOS-}" ]]
@@ -390,12 +351,7 @@ else
   # On Linux, support only 64-bit Intel
   if [[ "${UNAME_MACHINE}" == "aarch64" ]]
   then
-    abort "$(
-      cat <<EOABORT
-Tray on Linux is not supported on ARM processors.
-  ${tty_underline}https://docs...${tty_reset}
-EOABORT
-    )"
+    abort "Tray on Linux is not supported on ARM processors."
   elif [[ "${UNAME_MACHINE}" != "x86_64" ]]
   then
     abort "Tray on Linux is only supported on Intel processors!"
@@ -446,21 +402,11 @@ then
   USABLE_GIT="$(find_tool git)"
   if [[ -z "$(command -v git)" ]]
   then
-    abort "$(
-      cat <<EOABORT
-  You must install Git before installing Tray. See:
-    ${tty_underline}https://docs${tty_reset}
-EOABORT
-    )"
+    abort "You must install Git before installing Tray."
   fi
   if [[ -z "${USABLE_GIT}" ]]
   then
-    abort "$(
-      cat <<EOABORT
-  The version of Git that was found does not satisfy requirements for Tray.
-  Please install Git ${REQUIRED_GIT_VERSION} or newer and add it to your PATH.
-EOABORT
-    )"
+    abort "The version of Git that was found does not satisfy requirements for Tray."
   fi
   if [[ "${USABLE_GIT}" != /usr/bin/git ]]
   then
@@ -471,23 +417,13 @@ fi
 
 if ! command -v curl >/dev/null
 then
-  abort "$(
-    cat <<EOABORT
-You must install cURL before installing Tray. See:
-  ${tty_underline}https://docs${tty_reset}
-EOABORT
-  )"
+  abort "You must install cURL before installing Tray."
 elif [[ -n "${TRAY_ON_LINUX-}" || -n "${TRAY_ON_MINGW-}" ]]
 then
   USABLE_CURL="$(find_tool curl)"
   if [[ -z "${USABLE_CURL}" ]]
   then
-    abort "$(
-      cat <<EOABORT
-The version of cURL that was found does not satisfy requirements for Tray.
-Please install cURL ${REQUIRED_CURL_VERSION} or newer and add it to your PATH.
-EOABORT
-    )"
+    abort "The version of cURL that was found does not satisfy requirements for Tray."
   elif [[ "${USABLE_CURL}" != /usr/bin/curl ]]
   then
     export TRAY_CURL_PATH="${USABLE_CURL}"
@@ -496,27 +432,36 @@ EOABORT
 fi
 
 export USABLE_GRADLE=./gradlew
-export TRAY_HOME=~/.tray
-export LOCAL_APPS_PATH=/usr/local/bin
+export USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
+export USABLE_PATHS_HOME_BIN="echo ~"/bin
+
+# $ if [ "/c/Users/THINKPAD/.tray" == "$(echo ~/.tray)" ]; then echo "Equal"; else echo "NotEqual";  fi
+# >Equal
 
 if [[ -n ${TRAY_ON_MINGW-} ]]; then
-  export LOCAL_APPS_PATH=/mingw64/bin
+  export LOCAL_APPS_PATH=USABLE_PATHS_HOME_BIN
 fi
 
+logTitleL1 "Your bin paths:"
+IN="$PATH"
+mails=$(echo "$IN" | tr ":" " ")
+for addr in $mails
+do
+    if [[ $addr == */bin* ]]; then
+      echo -"[$addr]"
+    fi
+done
+
 logTitleL1 "This script will install:"
-
-
 echo "${TRAY_HOME}/repository/"
 echo "${TRAY_HOME}/bin/tray"
 echo "${LOCAL_APPS_PATH}/tray -> ${TRAY_HOME}/bin/tray"
 
-# store if we're sourced or not in a variable
-(return 0 2>/dev/null) && SOURCED=1 || SOURCED=0
 
-curdir=$(pwd)
+currentDir=$(pwd)
 {
-    mkdir -p ${TRAY_HOME}
-    cd ${TRAY_HOME}
+    mkdir -p "${TRAY_HOME}"
+    cd "${TRAY_HOME}"
     if [ ! -d repository ]; then
       mkdir repository
       logTitleL1 "Downloading tray sources..."
@@ -526,19 +471,18 @@ curdir=$(pwd)
     logTitleL1 "Updating tray sources..."
     execute "${USABLE_GIT}" pull
 
-    logTitleL1 "Making classes..."
+    logTitleL1 "Testing if sources buildable..."
     execute "${USABLE_GRADLE}" clean build
 
+    cp -r bin "${TRAY_HOME}"/
+    chmod u+x "${TRAY_HOME}"/bin/tray
 
-    cp -r bin ${TRAY_HOME}/
-    chmod u+x ${TRAY_HOME}/bin/tray
-
-    if [ -f ${LOCAL_APPS_PATH}/tray ]; then
-      if [ ! "$(readlink ${LOCAL_APPS_PATH}/tray)" == ${TRAY_HOME}/bin/tray ]; then
-        sudo ln -s ${TRAY_HOME}/bin/tray ${LOCAL_APPS_PATH}/tray
+    if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
+      if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
+        ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
       fi
     else
-      sudo ln -s ${TRAY_HOME}/bin/tray ${LOCAL_APPS_PATH}/tray
+      ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
     fi
 
     logTitleL1 "Checking installation result..."
@@ -546,12 +490,8 @@ curdir=$(pwd)
     tray --version
 } || {
     echo "Installation failed!"
-    cd $curdir
-    if [ "$SOURCED" == "1" ]; then
-      return 1;
-    fi
-    exit 1;
+    cd "$currentDir"
+    abort
 }
-cd $curdir
+cd "$currentDir"
 logTitleL1 "Installation successful!"
-
