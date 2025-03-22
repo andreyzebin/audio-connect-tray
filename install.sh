@@ -479,7 +479,7 @@ currentDir=$(pwd)
     logTitleL1 "Testing if sources buildable..."
     execute "${USABLE_GRADLE}" clean build
 
-    cp -r bin "${TRAY_HOME}"/
+    cp -rf bin "${TRAY_HOME}"/
     chmod u+x "${TRAY_HOME}"/bin/tray
 
     if [ -f "${LOCAL_APPS_PATH}"/tray ]; then

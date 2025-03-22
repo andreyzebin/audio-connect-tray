@@ -42,6 +42,7 @@ fi
 # Absolute path this script is in, thus /home/user/bin
 # SCRIPTPATH=$(dirname "$SCRIPT")
 
+# shellcheck disable=SC2116
 TRAY_HOME_DEFAULT=$(echo ~/.tray)
 TRAY_HOME=$TRAY_HOME_DEFAULT
 
@@ -54,17 +55,17 @@ if [ "$#" -lt 1 ]; then
 fi
 
 if [ "$#" -eq 1 ]; then
-    cd ${TRAY_HOME}/repository
+    cd "${TRAY_HOME}"/repository || exit
     ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1"
-    cd ${currentDir}
+    cd "${currentDir}"  || exit
 elif [ "$#" -eq 2 ]; then
-    cd ${TRAY_HOME}/repository
+    cd "${TRAY_HOME}"/repository || exit
     ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2"
-    cd ${currentDir}
+    cd "${currentDir}"  || exit
 elif [ "$#" -eq 3 ]; then
-    cd ${TRAY_HOME}/repository
+    cd "${TRAY_HOME}"/repository || exit
     ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2 $3"
-    cd ${currentDir}
+    cd "${currentDir}" || exit
 else
     echo "Too many arguments"
     echo "Usage: tray <arg1> <arg2>"
