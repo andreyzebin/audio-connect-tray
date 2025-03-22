@@ -413,6 +413,24 @@ then
   fi
 fi
 
+if [[ -n "${JAVA_HOME-}" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
+  USABLE_JAVA=${JAVA_HOME}/bin/java
+  if [[ $($USABLE_JAVA -version) ]]; then
+    # There is java - now lets check if its a JDK...
+    USABLE_JAVAC=${JAVA_HOME}/bin/javac
+    if [[ ! -f ${USABLE_JAVAC} ]]; then
+      abort "JAVA_HOME is set to jre. But jdk is required"
+    fi
+    JAVA_VER=$($USABLE_JAVAC -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
+    if [ ! "$JAVA_VER" -ge 170 ]; then
+      abort "Minimum jdk is 17!"
+    fi
+    logTitleL1 "Found JDK: ${JAVA_VER}"
+  fi
+else
+  abort "JAVA_HOME is not set. JDK is Required"
+fi
+
 USABLE_GRADLE=./gradlew
 USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
 # shellcheck disable=SC2116
@@ -442,25 +460,9 @@ echo "${TRAY_HOME}/repository/"
 echo "${TRAY_HOME}/bin/tray"
 echo "${LOCAL_APPS_PATH}/tray -> ${TRAY_HOME}/bin/tray"
 
-if [[ -n "${JAVA_HOME-}" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
-  USABLE_JAVA=${JAVA_HOME}/bin/java
-  if [[ $($USABLE_JAVA -version) ]]; then
-    # There is java - now lets check if its a JDK...
-    USABLE_JAVAC=${JAVA_HOME}/bin/javac
-    if [[ ! -f ${USABLE_JAVAC} ]]; then
-      abort "JAVA_HOME is set to jre. But jdk is required"
-    fi
-    JAVA_VER=$($USABLE_JAVAC -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
-    if [ ! "$JAVA_VER" -ge 170 ]; then
-      abort "Minimum jdk is 17!"
-    fi
-  fi
-else
-  abort "JAVA_HOME is not set. JDK is Required"
-fi
-
 currentDir=$(pwd)
 {
+    logTitleL1 "Installing tray..."
     mkdir -p "${TRAY_HOME}"
     cd "${TRAY_HOME}"
     if [ ! -d repository ]; then
