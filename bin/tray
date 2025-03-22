@@ -45,7 +45,7 @@ fi
 TRAY_HOME_DEFAULT=$(echo ~/.tray)
 TRAY_HOME=$TRAY_HOME_DEFAULT
 
-curdir=$(pwd)
+currentDir=$(pwd)
 # Check the number of arguments
 if [ "$#" -lt 1 ]; then
     echo "Missing arguments"
@@ -56,15 +56,15 @@ fi
 if [ "$#" -eq 1 ]; then
     cd ${TRAY_HOME}/repository
     ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1"
-    cd ${curdir}
+    cd ${currentDir}
 elif [ "$#" -eq 2 ]; then
     cd ${TRAY_HOME}/repository
     ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2"
-    cd ${curdir}
+    cd ${currentDir}
 elif [ "$#" -eq 3 ]; then
     cd ${TRAY_HOME}/repository
     ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2 $3"
-    cd ${curdir}
+    cd ${currentDir}
 else
     echo "Too many arguments"
     echo "Usage: tray <arg1> <arg2>"
