@@ -342,24 +342,6 @@ fi
 
 if [[ -n "${TRAY_ON_MACOS-}" ]]
 then
-  # On macOS, support 64-bit Intel and ARM
-  if [[ "${UNAME_MACHINE}" != "arm64" ]] && [[ "${UNAME_MACHINE}" != "x86_64" ]]
-  then
-    abort "Tray is only supported on Intel and ARM processors!"
-  fi
-else
-  # On Linux, support only 64-bit Intel
-  if [[ "${UNAME_MACHINE}" == "aarch64" ]]
-  then
-    abort "Tray on Linux is not supported on ARM processors."
-  elif [[ "${UNAME_MACHINE}" != "x86_64" ]]
-  then
-    abort "Tray on Linux is only supported on Intel processors!"
-  fi
-fi
-
-if [[ -n "${TRAY_ON_MACOS-}" ]]
-then
   macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
   if version_lt "${macos_version}" "10.7"
   then
@@ -431,15 +413,18 @@ then
   fi
 fi
 
-export USABLE_GRADLE=./gradlew
-export USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
-export USABLE_PATHS_HOME_BIN="echo ~"/bin
+USABLE_GRADLE=./gradlew
+USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
+# shellcheck disable=SC2116
+USABLE_PATHS_HOME_BIN=$(echo ~/bin)
 
 # $ if [ "/c/Users/THINKPAD/.tray" == "$(echo ~/.tray)" ]; then echo "Equal"; else echo "NotEqual";  fi
 # >Equal
 
 if [[ -n ${TRAY_ON_MINGW-} ]]; then
-  export LOCAL_APPS_PATH=USABLE_PATHS_HOME_BIN
+  LOCAL_APPS_PATH=$USABLE_PATHS_HOME_BIN
+else
+  LOCAL_APPS_PATH=$USABLE_PATHS_LOCAL_BIN
 fi
 
 logTitleL1 "Your bin paths:"
@@ -457,6 +442,22 @@ echo "${TRAY_HOME}/repository/"
 echo "${TRAY_HOME}/bin/tray"
 echo "${LOCAL_APPS_PATH}/tray -> ${TRAY_HOME}/bin/tray"
 
+if [[ -n "${JAVA_HOME-}" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
+  USABLE_JAVA=${JAVA_HOME}/bin/java
+  if [[ $($USABLE_JAVA -version) ]]; then
+    # There is java - now lets check if its a JDK...
+    USABLE_JAVAC=${JAVA_HOME}/bin/javac
+    if [[ ! -f ${USABLE_JAVAC} ]]; then
+      abort "JAVA_HOME is set to jre. But jdk is required"
+    fi
+    JAVA_VER=$($USABLE_JAVAC -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
+    if [ ! "$JAVA_VER" -ge 170 ]; then
+      abort "Minimum jdk is 17!"
+    fi
+  fi
+else
+  abort "JAVA_HOME is not set. JDK is Required"
+fi
 
 currentDir=$(pwd)
 {
