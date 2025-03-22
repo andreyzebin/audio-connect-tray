@@ -419,11 +419,11 @@ if [[ -n "${JAVA_HOME-}" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
     # There is java - now lets check if its a JDK...
     USABLE_JAVAC=${JAVA_HOME}/bin/javac
     if [[ ! -f ${USABLE_JAVAC} ]]; then
-      abort "JAVA_HOME is set to jre. But jdk is required"
+      abort "JAVA_HOME is set to JRE. But JDK is required"
     fi
     JAVA_VER=$($USABLE_JAVAC -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
     if [ ! "$JAVA_VER" -ge 170 ]; then
-      abort "Minimum jdk is 17!"
+      abort "Minimum JDK is 17!"
     fi
     logTitleL1 "Found JDK: ${JAVA_VER}"
   fi
