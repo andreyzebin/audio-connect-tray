@@ -481,11 +481,11 @@ currentDir=$(pwd)
 
     if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
       if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
-        ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+        ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
       fi
     else
       mkdir -p "${LOCAL_APPS_PATH}"
-      ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+      ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
     fi
 
     logTitleL1 "Testing if sources buildable..."
