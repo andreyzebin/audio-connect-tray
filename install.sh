@@ -479,12 +479,13 @@ currentDir=$(pwd)
     cp -rf bin "${TRAY_HOME}"/
     chmod u+x "${TRAY_HOME}"/bin/tray
 
+    # requires sudo
+    mkdir -p "${LOCAL_APPS_PATH}"
     if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
       if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
         ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
       fi
     else
-      mkdir -p "${LOCAL_APPS_PATH}"
       ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
     fi
 
