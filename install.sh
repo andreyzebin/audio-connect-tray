@@ -417,6 +417,8 @@ if [[ -n "${JAVA_HOME-}" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
   # USABLE_JAVA=${JAVA_HOME}/bin/java
   # execute "$USABLE_JAVA" -version
   # There is java - now lets check if its a JDK...
+
+
   USABLE_JAVAC=${JAVA_HOME}/bin/javac
   if [[ ! -f ${USABLE_JAVAC} ]]; then
     abort "JAVA_HOME is set to JRE. But JDK is required"
