@@ -36,13 +36,17 @@ then
   exit 1
 fi
 
-# Absolute path to this script, e.g. /home/user/bin/foo.sh
-SCRIPT=$(readlink -f "$0")
-# Absolute path this script is in, thus /home/user/bin
-SCRIPTPATH=$(dirname "$SCRIPT")
-export TRAY_HOME=${SCRIPTPATH}/..
 
-curdir=$(pwd)
+# Absolute path to this script, e.g. /home/user/bin/foo.sh
+# SCRIPT=$(readlink -f "$0")
+# Absolute path this script is in, thus /home/user/bin
+# SCRIPTPATH=$(dirname "$SCRIPT")
+
+# shellcheck disable=SC2116
+TRAY_HOME_DEFAULT=$(echo ~/.tray)
+TRAY_HOME=$TRAY_HOME_DEFAULT
+
+currentDir=$(pwd)
 # Check the number of arguments
 if [ "$#" -lt 1 ]; then
     echo "Missing arguments"
@@ -51,17 +55,17 @@ if [ "$#" -lt 1 ]; then
 fi
 
 if [ "$#" -eq 1 ]; then
-    cd ${SCRIPTPATH}/../repository
+    cd "${TRAY_HOME}"/repository || exit
     ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1"
-    cd ${curdir}
+    cd "${currentDir}"  || exit
 elif [ "$#" -eq 2 ]; then
-    cd ${SCRIPTPATH}/../repository
+    cd "${TRAY_HOME}"/repository || exit
     ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2"
-    cd ${curdir}
+    cd "${currentDir}"  || exit
 elif [ "$#" -eq 3 ]; then
-    cd ${SCRIPTPATH}/../repository
+    cd "${TRAY_HOME}"/repository || exit
     ./gradlew clean -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2 $3"
-    cd ${curdir}
+    cd "${currentDir}" || exit
 else
     echo "Too many arguments"
     echo "Usage: tray <arg1> <arg2>"

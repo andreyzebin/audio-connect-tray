@@ -46,7 +46,8 @@ application {
     mainClass = "org.example.App"
     applicationDefaultJvmArgs = listOf(
         "-Dlogger.root.level=DEBUG",
-        "-Dversion=${version}")
+        "-Dversion=${version}"
+    )
 }
 
 tasks.named<Test>("test") {
