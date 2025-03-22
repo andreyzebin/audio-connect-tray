@@ -428,8 +428,6 @@ if [[ -n "${JAVA_HOME-}" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
   if [ ! "$JAVA_VER" -ge 170 ]; then
     abort "Minimum JDK is 17!"
   fi
-  # awk -v var1=$JAVA_VER -v var2=10 'BEGIN { print  ( var1 / var2 ) }'
-  JAVA_VER=15
   logTitleL1 "Found JDK at ${JAVA_HOME}, version: $(awk -v var1="$JAVA_VER" -v var2=10 'BEGIN { print  ( var1 / var2 ) }')"
 else
   abort "JAVA_HOME is not set. JDK is Required"
