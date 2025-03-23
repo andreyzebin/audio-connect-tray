@@ -260,11 +260,11 @@ test_gradle() {
 
   local gradle_version_output
   gradle_version_output="$("$1" --version 2>/dev/null | grep Gradle)"
-  echo "raw version  $gradle_version_output"
+  # echo "raw version  $gradle_version_output"
   if [[ "${gradle_version_output}" =~ "Gradle "([^ ]*).* ]]
   then
-    echo "setting version  ${BASH_REMATCH[1]}"
-    export USABLE_GRADLE_VERSION="${BASH_REMATCH[1]}"
+    # echo "setting version  ${BASH_REMATCH[1]}"
+    # export USABLE_GRADLE_VERSION="${BASH_REMATCH[1]}"
     version_ge "$(major_minor "${USABLE_GRADLE_VERSION}")" "$(major_minor "${REQUIRED_GRADLE_VERSION}")"
   else
     abort "Unexpected Gradle version: '${gradle_version_output}'!"
@@ -446,7 +446,7 @@ then
   elif [[ "${USABLE_GRADLE}" != /usr/bin/gradle ]]
   then
     export TRAY_GRADLE_PATH="${USABLE_GRADLE}"
-    logTitleL1 "Found Gradle at ${TRAY_GRADLE_PATH}, version: ${USABLE_GRADLE_VERSION}"
+    logTitleL1 "Found Gradle at ${TRAY_GRADLE_PATH}"
   fi
 fi
 
