@@ -264,8 +264,8 @@ test_gradle() {
   if [[ "${gradle_version_output}" =~ "Gradle "([^ ]*).* ]]
   then
     # echo "setting version  ${BASH_REMATCH[1]}"
-    # export USABLE_GRADLE_VERSION="${BASH_REMATCH[1]}"
-    version_ge "$(major_minor "${USABLE_GRADLE_VERSION}")" "$(major_minor "${REQUIRED_GRADLE_VERSION}")"
+    local usable_GRADLE_VERSION="${BASH_REMATCH[1]}"
+    version_ge "$(major_minor "${usable_GRADLE_VERSION}")" "$(major_minor "${REQUIRED_GRADLE_VERSION}")"
   else
     abort "Unexpected Gradle version: '${gradle_version_output}'!"
   fi
