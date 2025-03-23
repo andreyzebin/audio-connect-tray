@@ -258,11 +258,12 @@ test_gradle() {
     return 1
   fi
 
+  echo "Testing gradle $1..."
   local gradle_version_output
   gradle_version_output="$("$1" --version 2>/dev/null | grep Gradle)"
   if [[ "${gradle_version_output}" =~ "Gradle "([^ ]*).* ]]
   then
-    USABLE_GRADLE_VERSION="${BASH_REMATCH[1]}"
+    export USABLE_GRADLE_VERSION="${BASH_REMATCH[1]}"
     version_ge "$(major_minor "${USABLE_GRADLE_VERSION}")" "$(major_minor "${REQUIRED_GRADLE_VERSION}")"
   else
     abort "Unexpected Gradle version: '${gradle_version_output}'!"
