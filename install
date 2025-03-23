@@ -514,13 +514,10 @@ currentDir=$(pwd)
     #     - - TRAY_HOME, USABLE_GRADLE
     #     - only session guaranteed availability
     #     - via alias 'tray=$TRAY_HOME/bin/tray'
-
-    # soft link emulation for window's git bash
-
-
     logTitleL1 " - Expose app to shell..."
     mkdir -p "${LOCAL_APPS_PATH}"
     if [[ -n ${TRAY_ON_MINGW-} ]]; then
+       # soft link emulation for window's git bash
       cat bin/softLinkEmu > "${LOCAL_APPS_PATH}"/tray
     else
       if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
