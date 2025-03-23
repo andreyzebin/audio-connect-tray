@@ -481,7 +481,7 @@ currentDir=$(pwd)
     chmod u+x "${TRAY_HOME}"/bin/tray
 
     # install types
-    # 1.  local install
+    # 1.  OS local install
     #     - USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
     #     - durable between shell sessions
     #     - available between users
