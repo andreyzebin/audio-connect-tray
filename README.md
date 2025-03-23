@@ -16,7 +16,7 @@ Requirements
 
 ### Install 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/andreyzebin/audio-connect-tray/refs/heads/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/andreyzebin/audio-connect-tray/refs/heads/main/install)"
 ```
 
 ### Toggle Audio Connection

@@ -520,12 +520,16 @@ currentDir=$(pwd)
 
     logTitleL1 " - Expose app to shell..."
     mkdir -p "${LOCAL_APPS_PATH}"
-    if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
-      if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
+    if [[ -n ${TRAY_ON_MINGW-} ]]; then
+      cat bin/softLinkEmu > "${LOCAL_APPS_PATH}"/tray
+    else
+      if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
+        if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
+          ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+        fi
+      else
         ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
       fi
-    else
-      ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
     fi
 
     logTitleL1 "Checking installation result..."

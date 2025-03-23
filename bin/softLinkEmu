@@ -1,0 +1,10 @@
+#!/bin/bash -pu
+set -u
+
+TRAY_HOME_DEFAULT=$(echo ~/.tray)
+TRAY_HOME=$TRAY_HOME_DEFAULT
+
+# run it
+echo "Soft link emulation: $TRAY_HOME/bin/tray $@"
+# shellcheck disable=SC2145
+eval "$TRAY_HOME/bin/tray $@"
