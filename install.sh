@@ -483,7 +483,7 @@ currentDir=$(pwd)
     # install types
     # 1.  OS local install by Admin
     #     - LOCAL_APPS_PATH="/usr/local/bin"
-    #     - TRAY_HOME=/opt/tray or TRAY_HOME=/home/tray
+    #     - TRAY_HOME=/opt/tray or TRAY_HOME=/home/tray/.tray
     #     - durable between shell sessions
     #     - available between users
     #     - expose app to shell
@@ -498,13 +498,18 @@ currentDir=$(pwd)
     #     - LOCAL_APPS_PATH=$(echo ~/bin)
     #     - TRAY_HOME=$(echo ~/.tray)
     #     - not requires sudo
+    #     - LOCAL_APPS_PATH must exist in PATH
     # 3.  shell session install
     #     - best for CI
     #     - may be cached durably between sessions
     #     - - using '2. user home install' dirs for cache
     #     - - TRAY_HOME
-    #     - only session availability
+    #     - only session guaranteed availability
     #     - via alias 'tray=$TRAY_HOME/bin/tray'
+
+    # soft link emulation for window's git bash
+
+
     logTitleL1 " - Expose app to shell..."
     mkdir -p "${LOCAL_APPS_PATH}"
     if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
