@@ -481,8 +481,9 @@ currentDir=$(pwd)
     chmod u+x "${TRAY_HOME}"/bin/tray
 
     # install types
-    # 1.  OS local install
-    #     - USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
+    # 1.  OS local install by Admin
+    #     - LOCAL_APPS_PATH="/usr/local/bin"
+    #     - TRAY_HOME=/opt/tray or TRAY_HOME=/home/tray
     #     - durable between shell sessions
     #     - available between users
     #     - expose app to shell
@@ -491,10 +492,10 @@ currentDir=$(pwd)
     #     - requires sudo
     #     - - via prompt
     #     - - via snippet after install
-    #     - - - $> ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+    #     - - - $> ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
     # 2.  user home install
     #     - best for office machine
-    #     - USABLE_PATHS_HOME_BIN=$(echo ~/bin)
+    #     - LOCAL_APPS_PATH=$(echo ~/bin)
     #     - TRAY_HOME=$(echo ~/.tray)
     #     - not requires sudo
     # 3.  shell session install
@@ -508,10 +509,10 @@ currentDir=$(pwd)
     mkdir -p "${LOCAL_APPS_PATH}"
     if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
       if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
-        ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+        ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
       fi
     else
-      ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+      ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
     fi
 
     logTitleL1 "Checking installation result..."
