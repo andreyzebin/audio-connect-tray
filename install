@@ -5,6 +5,16 @@ unset USE_SOFT_LINK_EMULATION
 unset USE_GRADLE_WRAPPER
 unset USE_INTERACTIVE_ELEVATION
 
+
+# default path when you have an Admin rights
+USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
+
+# default path when you have strict office access rights
+# shellcheck disable=SC2116
+USABLE_PATHS_HOME_BIN=$(echo ~/bin)
+
+LOCAL_APPS_PATH=$USABLE_PATHS_LOCAL_BIN
+
 # OS=Windows_NT
 if [[ "${OS-}" == "Windows_NT" ]]; then
   USE_SOFT_LINK_EMULATION=1
@@ -20,6 +30,7 @@ else
       USE_INTERACTIVE_ELEVATION=1
   else
       echo "you are not an admin - office install";
+      LOCAL_APPS_PATH=$USABLE_PATHS_HOME_BIN
   fi
 fi
 
@@ -493,18 +504,8 @@ else
   abort "JAVA_HOME is not set. JDK is Required"
 fi
 
-USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
-# shellcheck disable=SC2116
-USABLE_PATHS_HOME_BIN=$(echo ~/bin)
-
 # $ if [ "/c/Users/THINKPAD/.tray" == "$(echo ~/.tray)" ]; then echo "Equal"; else echo "NotEqual";  fi
 # >Equal
-
-if [[ -n ${TRAY_ON_MINGW-} ]]; then
-  LOCAL_APPS_PATH=$USABLE_PATHS_HOME_BIN
-else
-  LOCAL_APPS_PATH=$USABLE_PATHS_LOCAL_BIN
-fi
 
 logTitleL1 "Your bin paths:"
 IN="$PATH"
