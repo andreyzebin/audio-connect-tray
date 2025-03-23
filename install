@@ -345,12 +345,7 @@ then
   macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
   if version_lt "${macos_version}" "10.7"
   then
-    abort "$(
-      cat <<EOABORT
-Your Mac OS X version is too old. See:
-  ${tty_underline}https://githu...${tty_reset}
-EOABORT
-    )"
+    abort "Your Mac OS X version is too old."
   elif version_lt "${macos_version}" "10.11"
   then
     abort "Your OS X version is too old."
@@ -433,7 +428,8 @@ else
   abort "JAVA_HOME is not set. JDK is Required"
 fi
 
-USABLE_GRADLE=./gradlew
+# USABLE_GRADLE=./gradlew
+USABLE_GRADLE=gradle
 USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
 # shellcheck disable=SC2116
 USABLE_PATHS_HOME_BIN=$(echo ~/bin)
