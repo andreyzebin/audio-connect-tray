@@ -469,17 +469,20 @@ currentDir=$(pwd)
     cd "${TRAY_HOME}"
     if [ ! -d repository ]; then
       mkdir repository
-      logTitleL1 "Downloading tray sources..."
+      logTitleL1 " - Downloading tray sources..."
       execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
     fi
     cd repository
-    logTitleL1 "Updating tray sources..."
+    logTitleL1 " - Pulling latest tray sources..."
     execute "${USABLE_GIT}" pull
 
+    logTitleL1 " - Installing binaries..."
     cp -rf bin "${TRAY_HOME}"/
     chmod u+x "${TRAY_HOME}"/bin/tray
 
     # requires sudo
+    # via $LOCAL_APPS_PATH or via .bashrc
+    logTitleL1 " - Expose app to shell..."
     mkdir -p "${LOCAL_APPS_PATH}"
     if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
       if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
@@ -489,11 +492,10 @@ currentDir=$(pwd)
       ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
     fi
 
-    logTitleL1 "Testing if sources buildable..."
-    execute "${USABLE_GRADLE}" clean build
-
     logTitleL1 "Checking installation result..."
-    logTitleL1 "Executing: 'tray --version'..."
+    logTitleL1 " - Testing if sources are buildable..."
+    execute "${USABLE_GRADLE}" clean build
+    logTitleL1 " - Executing: 'tray --version'..."
     tray --version
 } || {
     cd "$currentDir"
