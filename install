@@ -279,6 +279,7 @@ which() {
 # function which is set above
 # shellcheck disable=SC2230
 find_tool() {
+  echo "Finding tool $1..."
   if [[ $# -ne 1 ]]
   then
     return 1
