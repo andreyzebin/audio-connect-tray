@@ -480,8 +480,27 @@ currentDir=$(pwd)
     cp -rf bin "${TRAY_HOME}"/
     chmod u+x "${TRAY_HOME}"/bin/tray
 
-    # requires sudo
-    # via $LOCAL_APPS_PATH or via .bashrc
+    # install types
+    # 1.  local install
+    #     - USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
+    #     - durable between shell sessions
+    #     - available between users
+    #     - expose app to shell
+    #     - - via $LOCAL_APPS_PATH or
+    #     - - via .bashrc
+    #     - requires sudo
+    #     - - via prompt
+    #     - - via snippet after install
+    #     - - - $> ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+    # 2.  user home install (x)
+    #     - USABLE_PATHS_HOME_BIN=$(echo ~/bin)
+    #     - TRAY_HOME=$(echo ~/.tray)
+    # 3.  shell session install
+    #     - may be cached durably between sessions
+    #     - - using '2. user home install' dirs for cache
+    #     - - TRAY_HOME
+    #     - only session availability
+    #     - via alias 'tray=$TRAY_HOME/bin/tray'
     logTitleL1 " - Expose app to shell..."
     mkdir -p "${LOCAL_APPS_PATH}"
     if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
