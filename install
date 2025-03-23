@@ -260,9 +260,10 @@ test_gradle() {
 
   local gradle_version_output
   gradle_version_output="$("$1" --version 2>/dev/null | grep Gradle)"
+  echo "raw version  $gradle_version_output"
   if [[ "${gradle_version_output}" =~ "Gradle "([^ ]*).* ]]
   then
-    echo "Setting USABLE_GRADLE_VERSION.."
+    echo "setting version  ${BASH_REMATCH[1]}"
     export USABLE_GRADLE_VERSION="${BASH_REMATCH[1]}"
     version_ge "$(major_minor "${USABLE_GRADLE_VERSION}")" "$(major_minor "${REQUIRED_GRADLE_VERSION}")"
   else
