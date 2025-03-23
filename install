@@ -584,10 +584,19 @@ currentDir=$(pwd)
     else
       if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
         if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
-          ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+          # Overwrite
+          if have_sudo_access; then
+            sudo ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+          else
+            ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+          fi
         fi
       else
-        ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+        if have_sudo_access; then
+          sudo ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+        else
+          ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+        fi
       fi
     fi
 
