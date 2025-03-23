@@ -1,6 +1,18 @@
 #!/bin/bash -eu
 set -u
 
+
+if [[ -n "${CI-}" ]]
+then
+  echo "running in CI - session install";
+else
+  if [ -x /usr/bin/sudo ]; then
+      echo "you are admin - local install";
+  else
+      echo "you are not an admin - office install";
+  fi
+fi
+
 # store if we're sourced or not in a variable
 (return 0 2>/dev/null) && SOURCED=1 || SOURCED=0
 
