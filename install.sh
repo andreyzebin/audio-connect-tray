@@ -492,10 +492,13 @@ currentDir=$(pwd)
     #     - - via prompt
     #     - - via snippet after install
     #     - - - $> ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
-    # 2.  user home install (x)
+    # 2.  user home install
+    #     - best for office machine
     #     - USABLE_PATHS_HOME_BIN=$(echo ~/bin)
     #     - TRAY_HOME=$(echo ~/.tray)
+    #     - not requires sudo
     # 3.  shell session install
+    #     - best for CI
     #     - may be cached durably between sessions
     #     - - using '2. user home install' dirs for cache
     #     - - TRAY_HOME
