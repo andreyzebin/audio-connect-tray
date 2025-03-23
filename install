@@ -602,3 +602,4 @@ cd "$currentDir"
 logTitleL1 "Installation successful!"
 
 # export JAVA_HOME=/c/Users/THINKPAD/.gradle/jdks/eclipse_adoptium-17-amd64-windows.2
+# /c/Users/THINKPAD//.gradle/wrapper/dists/gradle-8.13-bin/5xuhj0ry160q40clulazy9h7d/gradle-8.13/bin/gradle
