@@ -279,7 +279,6 @@ which() {
 # function which is set above
 # shellcheck disable=SC2230
 find_tool() {
-  echo "Finding tool $1..."
   if [[ $# -ne 1 ]]
   then
     return 1
@@ -436,7 +435,9 @@ then
   abort "You must install Gradle before installing Tray."
 elif [[ -n "${TRAY_ON_LINUX-}" || -n "${TRAY_ON_MINGW-}" ]]
 then
+  logTitleL1 " - - Looking for gradle..."
   USABLE_GRADLE="$(find_tool gradle)"
+  logTitleL1 " - - Found: ${USABLE_GRADLE}..."
   if [[ -z "${USABLE_GRADLE}" ]]
   then
     abort "The version of Gradle that was found does not satisfy requirements for Tray."
