@@ -4,12 +4,15 @@ set -u
 
 if [[ -n "${CI-}" ]]
 then
-  echo "running in CI - session install";
+  echo "running in CI - CI install";
+  unset USE_GRADLE_WRAPPER
 else
   if [ -x /usr/bin/sudo ]; then
-      echo "you are admin - local install";
+      echo "you are admin - home install";
+      USE_GRADLE_WRAPPER=1
   else
       echo "you are not an admin - office install";
+      unset USE_GRADLE_WRAPPER
   fi
 fi
 
@@ -444,20 +447,24 @@ then
 fi
 
 # if not using wrapper
-if ! command -v gradle >/dev/null
-then
-  abort "You must install Gradle before installing Tray."
-elif [[ -n "${TRAY_ON_LINUX-}" || -n "${TRAY_ON_MINGW-}" ]]
-then
-  USABLE_GRADLE="$(find_tool gradle)"
-  if [[ -z "${USABLE_GRADLE}" ]]
+if [ -z "${USE_GRADLE_WRAPPER-}" ]; then
+  if ! command -v gradle >/dev/null
   then
-    abort "The version of Gradle that was found does not satisfy requirements for Tray."
-  elif [[ "${USABLE_GRADLE}" != /usr/bin/gradle ]]
+    abort "You must install Gradle before installing Tray."
+  elif [[ -n "${TRAY_ON_LINUX-}" || -n "${TRAY_ON_MINGW-}" ]]
   then
-    export TRAY_GRADLE_PATH="${USABLE_GRADLE}"
-    logTitleL1 "Found Gradle at ${TRAY_GRADLE_PATH}"
+    USABLE_GRADLE="$(find_tool gradle)"
+    if [[ -z "${USABLE_GRADLE}" ]]
+    then
+      abort "The version of Gradle that was found does not satisfy requirements for Tray."
+    elif [[ "${USABLE_GRADLE}" != /usr/bin/gradle ]]
+    then
+      export TRAY_GRADLE_PATH="${USABLE_GRADLE}"
+      logTitleL1 "Found Gradle at ${TRAY_GRADLE_PATH}"
+    fi
   fi
+else
+  USABLE_GRADLE=./gradlew
 fi
 
 if [[ -n "${JAVA_HOME-}" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
@@ -480,8 +487,6 @@ else
   abort "JAVA_HOME is not set. JDK is Required"
 fi
 
-# USABLE_GRADLE=./gradlew
-# USABLE_GRADLE=gradle
 USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
 # shellcheck disable=SC2116
 USABLE_PATHS_HOME_BIN=$(echo ~/bin)
