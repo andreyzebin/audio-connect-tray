@@ -482,6 +482,7 @@ currentDir=$(pwd)
 
     # install types
     # 1.  OS local install by Admin
+    #     - requires sudo elevation
     #     - LOCAL_APPS_PATH="/usr/local/bin"
     #     - TRAY_HOME=/opt/tray or TRAY_HOME=/home/tray/.tray
     #     - durable between shell sessions
@@ -489,7 +490,6 @@ currentDir=$(pwd)
     #     - expose app to shell
     #     - - via $LOCAL_APPS_PATH or
     #     - - via .bashrc
-    #     - requires sudo
     #     - - via prompt
     #     - - via snippet after install
     #     - - - $> ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
