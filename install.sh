@@ -502,8 +502,10 @@ currentDir=$(pwd)
     #     - TRAY_HOME=$(echo ~/.tray)
     #     - HOME=$(echo ~)
     #     - LOCAL_APPS_PATH must exist in PATH
-    #     - - $> echo '# set PATH so it includes user's private bin if it exists' >> ~/.bashrc
-    #     - - $> echo 'if [ -d "$HOME/bin" ] ; then PATH="$HOME/bin:$PATH" fi' >> ~/.bashrc
+    #     - - if [ -d "$HOME/bin" ] ; then
+    #     - - $> echo '# set PATH so it includes user's private bin if it exists' >> ~/.profile
+    #     - - $> echo 'if [ -d "$HOME/bin" ] ; then PATH="$HOME/bin:$PATH" fi' >> ~/.profile
+    #     - - fi
     # 3.  shell session install
     #     - best for CI
     #     - non-interactive
