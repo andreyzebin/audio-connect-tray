@@ -555,7 +555,7 @@ done
 logTitleL1 "This script will install:"
 echo "${TRAY_HOME}/repository/"
 echo "${TRAY_HOME}/bin/tray"
-echo "${LOCAL_APPS_PATH}/tray -> ${TRAY_HOME}/bin/tray"
+echo "${LOCAL_APPS_PATH}/tray"
 
 currentDir=$(pwd)
 {
