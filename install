@@ -3,6 +3,7 @@ set -u
 
 unset USE_SOFT_LINK_EMULATION
 unset USE_GRADLE_WRAPPER
+unset USE_INTERACTIVE_ELEVATION
 
 # OS=Windows_NT
 if [[ "${OS-}" == "Windows_NT" ]]; then
@@ -16,6 +17,7 @@ else
   if [ -x /usr/bin/sudo ]; then
       echo "you are admin - home install";
       USE_GRADLE_WRAPPER=1
+      USE_INTERACTIVE_ELEVATION=1
   else
       echo "you are not an admin - office install";
   fi
@@ -359,13 +361,13 @@ have_sudo_access() {
 }
 
 # shellcheck disable=SC2016
-# logTitleL1 'Checking for `sudo` access (which may request your password)...'
-: '
-if [[ -n "${TRAY_ON_MACOS-}" ]]
+
+if [[ -n "${USE_INTERACTIVE_ELEVATION-}" ]]
 then
+  logTitleL1 'Checking for `sudo` access (may request your password)...'
   [[ "${EUID:-${UID}}" == "0" ]] || have_sudo_access
 elif ! [[ -w "${TRAY_HOME}" ]] &&
-     ! [[ -w "/home" ]] &&
+     # ! [[ -w "/home" ]] &&
      ! have_sudo_access
 then
   abort "$(
@@ -374,7 +376,6 @@ Insufficient permissions to install Tray to "${TRAY_HOME}" (the default prefix).
 EOABORT
   )"
 fi
-'
 
 # check_run_command_as_root
 
