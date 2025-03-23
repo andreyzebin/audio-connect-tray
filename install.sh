@@ -501,6 +501,7 @@ currentDir=$(pwd)
     #     - LOCAL_APPS_PATH must exist in PATH
     # 3.  shell session install
     #     - best for CI
+    #     - non-interactive
     #     - may be cached durably between sessions
     #     - - using '2. user home install' dirs for cache
     #     - - TRAY_HOME
