@@ -182,6 +182,9 @@ MACOS_OLDEST_SUPPORTED="13.0"
 # For Tray on Linux
 REQUIRED_CURL_VERSION=7.41.0
 REQUIRED_GIT_VERSION=2.7.0
+REQUIRED_GRADLE_VERSION=7.5.0
+# java 17
+REQUIRED_JAVA_VERSION=170
 
 # ---------------------------------------
 
@@ -245,6 +248,23 @@ test_git() {
     version_ge "$(major_minor "${BASH_REMATCH[1]}")" "$(major_minor "${REQUIRED_GIT_VERSION}")"
   else
     abort "Unexpected Git version: '${git_version_output}'!"
+  fi
+}
+
+test_gradle() {
+
+  if [[ ! -x "$1" ]]
+  then
+    return 1
+  fi
+
+  local gradle_version_output
+  gradle_version_output="$("$1" --version 2>/dev/null | grep Gradle)"
+  if [[ "${gradle_version_output}" =~ "Gradle "([^ ]*).* ]]
+  then
+    version_ge "$(major_minor "${BASH_REMATCH[1]}")" "$(major_minor "${REQUIRED_GRADLE_VERSION}")"
+  else
+    abort "Unexpected Gradle version: '${git_version_output}'!"
   fi
 }
 
@@ -408,6 +428,23 @@ then
   fi
 fi
 
+# if not using wrapper
+if ! command -v gradle >/dev/null
+then
+  abort "You must install Gradle before installing Tray."
+elif [[ -n "${TRAY_ON_LINUX-}" || -n "${TRAY_ON_MINGW-}" ]]
+then
+  USABLE_GRADLE="$(find_tool gradle)"
+  if [[ -z "${USABLE_GRADLE}" ]]
+  then
+    abort "The version of Gradle that was found does not satisfy requirements for Tray."
+  elif [[ "${USABLE_GRADLE}" != /usr/bin/gradle ]]
+  then
+    export TRAY_GRADLE_PATH="${USABLE_GRADLE}"
+    logTitleL1 "Found Gradle: ${TRAY_GRADLE_PATH}"
+  fi
+fi
+
 if [[ -n "${JAVA_HOME-}" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
   # USABLE_JAVA=${JAVA_HOME}/bin/java
   # execute "$USABLE_JAVA" -version
@@ -420,7 +457,7 @@ if [[ -n "${JAVA_HOME-}" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
     abort "JAVA_HOME is set to JRE. But JDK is required"
   fi
   JAVA_VER=$($USABLE_JAVA -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '{sub("^$", "0", $2); print $1$2}')
-  if [ ! "$JAVA_VER" -ge 170 ]; then
+  if [ ! "$JAVA_VER" -ge "$REQUIRED_JAVA_VERSION" ]; then
     abort "Minimum JDK is 17!"
   fi
   logTitleL1 "Found JDK at ${JAVA_HOME}, version: $(awk -v var1="$JAVA_VER" -v var2=10 'BEGIN { print  ( var1 / var2 ) }')"
@@ -429,7 +466,7 @@ else
 fi
 
 # USABLE_GRADLE=./gradlew
-USABLE_GRADLE=gradle
+# USABLE_GRADLE=gradle
 USABLE_PATHS_LOCAL_BIN="/usr/local/bin"
 # shellcheck disable=SC2116
 USABLE_PATHS_HOME_BIN=$(echo ~/bin)
