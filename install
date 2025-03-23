@@ -15,7 +15,7 @@ then
   echo "running in CI - CI install";
 else
   if [ -x /usr/bin/sudo ]; then
-      echo "you are admin - home install";
+      echo "you are an admin - home install";
       USE_GRADLE_WRAPPER=1
       USE_INTERACTIVE_ELEVATION=1
   else
