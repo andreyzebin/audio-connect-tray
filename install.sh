@@ -493,18 +493,23 @@ currentDir=$(pwd)
     #     - - via prompt
     #     - - via snippet after install
     #     - - - $> ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+    #     - USABLE_GRADLE=./gradlew
     # 2.  user home install
-    #     - best for office machine
+    #     - best for office machine with strict access policy
+    #     - not requires sudo
+    #     - USABLE_GRADLE=gradle
     #     - LOCAL_APPS_PATH=$(echo ~/bin)
     #     - TRAY_HOME=$(echo ~/.tray)
-    #     - not requires sudo
+    #     - HOME=$(echo ~)
     #     - LOCAL_APPS_PATH must exist in PATH
+    #     - - $> echo '# set PATH so it includes user's private bin if it exists' >> ~/.bashrc
+    #     - - $> echo 'if [ -d "$HOME/bin" ] ; then PATH="$HOME/bin:$PATH" fi' >> ~/.bashrc
     # 3.  shell session install
     #     - best for CI
     #     - non-interactive
     #     - may be cached durably between sessions
     #     - - using '2. user home install' dirs for cache
-    #     - - TRAY_HOME
+    #     - - TRAY_HOME, USABLE_GRADLE
     #     - only session guaranteed availability
     #     - via alias 'tray=$TRAY_HOME/bin/tray'
 
