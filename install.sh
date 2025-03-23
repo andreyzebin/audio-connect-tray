@@ -502,7 +502,7 @@ currentDir=$(pwd)
     #     - TRAY_HOME=$(echo ~/.tray)
     #     - HOME=$(echo ~)
     #     - LOCAL_APPS_PATH must exist in PATH
-    #     - - if [ -d "$HOME/bin" ] ; then
+    #     - - if [[ ! PATH==*"$LOCAL_APPS_PATH"* ]] ; then
     #     - - $> echo '# set PATH so it includes user's private bin if it exists' >> ~/.profile
     #     - - $> echo 'if [ -d "$HOME/bin" ] ; then PATH="$HOME/bin:$PATH" fi' >> ~/.profile
     #     - - fi
