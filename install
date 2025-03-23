@@ -260,6 +260,7 @@ test_gradle() {
 
   local gradle_version_output
   gradle_version_output="$("$1" --version 2>/dev/null | grep Gradle)"
+  echo "Gradle version line: $gradle_version_output"
   if [[ "${gradle_version_output}" =~ "Gradle "([^ ]*).* ]]
   then
     export USABLE_GRADLE_VERSION=$gradle_version_output
