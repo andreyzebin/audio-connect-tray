@@ -214,7 +214,8 @@ else
 fi
 
 # shellcheck disable=SC2116
-TRAY_HOME=$(echo ~/.tray)
+trayHome=$(echo ~/.tray)
+export TRAY_HOME=$trayHome
 
 execute() {
   if ! "$@"
