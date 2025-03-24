@@ -37,8 +37,11 @@ dependencies {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     // if dev environment
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+    val isProd = (project.findProperty("isProduction") ?: 0) == 1
+    if (!isProd) {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
     }
 }
 
