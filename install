@@ -613,7 +613,7 @@ currentDir=$(pwd)
 
       logTitleL1 "Checking installation result..."
       logTitleL1 " - Testing if sources are buildable..."
-      execute "${USABLE_GRADLE}" -PenvironmentName=prod clean build
+      execute "${USABLE_GRADLE}" -PisProduction=1 clean build
       logTitleL1 " - Executing: 'tray --version'..."
       tray --version
     else

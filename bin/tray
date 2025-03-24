@@ -56,15 +56,15 @@ fi
 
 if [ "$#" -eq 1 ]; then
     cd "${TRAY_HOME}"/repository || exit
-    ./gradlew clean -PenvironmentName=prod -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1"
+    ./gradlew clean -PisProduction=1 -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1"
     cd "${currentDir}"  || exit
 elif [ "$#" -eq 2 ]; then
     cd "${TRAY_HOME}"/repository || exit
-    ./gradlew clean -PenvironmentName=prod -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2"
+    ./gradlew clean -PisProduction=1 -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2"
     cd "${currentDir}"  || exit
 elif [ "$#" -eq 3 ]; then
     cd "${TRAY_HOME}"/repository || exit
-    ./gradlew clean -PenvironmentName=prod -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2 $3"
+    ./gradlew clean -PisProduction=1 -Dorg.gradle.logging.level=quiet --console=plain app:run --args="$1 $2 $3"
     cd "${currentDir}" || exit
 else
     echo "Too many arguments"
