@@ -22,6 +22,7 @@ Requirements
 Install for CI
 ```bash
 CI=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/andreyzebin/audio-connect-tray/refs/heads/main/install)"
+alias tray="$TRAY_HOME/bin/tray"
 ```
 
 ### Toggle Audio Connection
