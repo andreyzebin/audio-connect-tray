@@ -559,7 +559,8 @@ echo "${LOCAL_APPS_PATH}/tray"
 
 trayTest () {
         export TRAY_HOME
-        alias tray="$TRAY_HOME"/bin/tray
+        # shellcheck disable=SC2139
+        alias tray="$TRAY_HOME/bin/tray"
         echo "Use alias=$TRAY_HOME/bin/tray"
 }
 
