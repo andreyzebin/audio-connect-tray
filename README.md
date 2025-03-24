@@ -18,6 +18,10 @@ Requirements
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/andreyzebin/audio-connect-tray/refs/heads/main/install)"
 ```
+, also - if you are using gradle 7.x.x
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/andreyzebin/audio-connect-tray/refs/heads/gradle-7/install)"
+```
 
 Install for CI
 ```bash
