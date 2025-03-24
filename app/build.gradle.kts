@@ -34,20 +34,9 @@ dependencies {
 
 }
 
-// Apply a specific Java toolchain to ease working on different environments.
-java {
-    // if dev environment
-    val isProd = (project.findProperty("isProduction") ?: 0) == 1
-    if (!isProd) {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
-        }
-    }
-}
-
 application {
     // Define the main class for the application.
-    mainClass = "org.example.App"
+    mainClass.set( "org.example.App")
     applicationDefaultJvmArgs = listOf(
         "-Dlogger.root.level=DEBUG",
         "-Dversion=${version}"
