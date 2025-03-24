@@ -19,6 +19,11 @@ Requirements
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/andreyzebin/audio-connect-tray/refs/heads/main/install)"
 ```
 
+Install for CI
+```bash
+CI=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/andreyzebin/audio-connect-tray/refs/heads/main/install)"
+```
+
 ### Toggle Audio Connection
 
 List radio available devices.
