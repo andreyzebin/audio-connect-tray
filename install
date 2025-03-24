@@ -575,10 +575,12 @@ currentDir=$(pwd)
     if [ ! -d repository ]; then
       mkdir repository
       logTitleL1 " - Downloading tray sources..."
-      execute "${USABLE_GIT}" clone https://github.com/andreyzebin/audio-connect-tray.git repository
+      execute "${USABLE_GIT}" clone --single-branch --branch gradle-7 https://github.com/andreyzebin/audio-connect-tray.git repository
     fi
     cd repository
     logTitleL1 " - Pulling latest tray sources..."
+    execute "${USABLE_GIT}" fetch
+    execute "${USABLE_GIT}" switch gradle-7
     execute "${USABLE_GIT}" pull
 
     logTitleL1 " - Installing binaries..."
