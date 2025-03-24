@@ -71,6 +71,9 @@ fi
 
 # store if we're sourced or not in a variable
 (return 0 2>/dev/null) && SOURCED=1 || SOURCED=0
+if [ "$SOURCED" == "1" ]; then
+    echo "It is run using source."
+fi
 
 abort() {
   printf "%s\n" "$@" >&2
@@ -153,7 +156,7 @@ Usage: [NONINTERACTIVE=1] [CI=1] install.sh [options]
     NONINTERACTIVE   Install without prompting for user input
     CI               Install in CI mode (e.g. do not prompt for user input)
 EOS
-  exit "${1:-0}"
+  abort "${1:-0}"
 }
 
 while [[ $# -gt 0 ]]
