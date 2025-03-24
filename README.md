@@ -14,11 +14,11 @@ List bluetooth devices and choose audio for a quick toggle.
 Requirements
 - Operating system: Linux or macOs
 
-### Install 
+### Install
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/andreyzebin/audio-connect-tray/refs/heads/main/install)"
 ```
-, also - if you are using gradle 7.x.x
+also, if you are using gradle 7.x.x
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/andreyzebin/audio-connect-tray/refs/heads/gradle-7/install)"
 ```
