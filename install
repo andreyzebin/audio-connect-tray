@@ -557,6 +557,12 @@ echo "${TRAY_HOME}/repository/"
 echo "${TRAY_HOME}/bin/tray"
 echo "${LOCAL_APPS_PATH}/tray"
 
+trayTest () {
+        export TRAY_HOME
+        alias tray="$TRAY_HOME"/bin/tray
+        echo "Use alias=$TRAY_HOME/bin/tray"
+}
+
 currentDir=$(pwd)
 {
     logTitleL1 "Installing tray..."
@@ -575,36 +581,41 @@ currentDir=$(pwd)
     cp -rf bin "${TRAY_HOME}"/
     chmod u+x "${TRAY_HOME}"/bin/tray
 
-    logTitleL1 " - Expose app to shell..."
-    mkdir -p "${LOCAL_APPS_PATH}"
-    if [[ -n ${USE_SOFT_LINK_EMULATION-} ]]; then
-      logTitleL1 " - - Using soft link emulation for windows..."
-       # soft link emulation for window's git bash
-      cat bin/softLinkEmu > "${LOCAL_APPS_PATH}"/tray
-    else
-      if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
-        if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
-          # Overwrite
+    if [[ -z "${CI-}" ]]; then
+      logTitleL1 " - Expose app to shell..."
+      mkdir -p "${LOCAL_APPS_PATH}"
+      if [[ -n ${USE_SOFT_LINK_EMULATION-} ]]; then
+        logTitleL1 " - - Using soft link emulation for windows..."
+         # soft link emulation for window's git bash
+        cat bin/softLinkEmu > "${LOCAL_APPS_PATH}"/tray
+      else
+        if [ -f "${LOCAL_APPS_PATH}"/tray ]; then
+          if [ ! "$(readlink "${LOCAL_APPS_PATH}"/tray)" == "${TRAY_HOME}"/bin/tray ]; then
+            # Overwrite
+            if have_sudo_access; then
+              sudo ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+            else
+              ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+            fi
+          fi
+        else
           if have_sudo_access; then
-            sudo ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+            sudo ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
           else
-            ln -sf "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
+            ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
           fi
         fi
-      else
-        if have_sudo_access; then
-          sudo ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
-        else
-          ln -s "${TRAY_HOME}"/bin/tray "${LOCAL_APPS_PATH}"/tray
-        fi
       fi
-    fi
 
-    logTitleL1 "Checking installation result..."
-    logTitleL1 " - Testing if sources are buildable..."
-    execute "${USABLE_GRADLE}" clean build
-    logTitleL1 " - Executing: 'tray --version'..."
-    tray --version
+      logTitleL1 "Checking installation result..."
+      logTitleL1 " - Testing if sources are buildable..."
+      execute "${USABLE_GRADLE}" clean build
+      logTitleL1 " - Executing: 'tray --version'..."
+      tray --version
+    else
+      logTitleL1 " - Executing: 'tray --version'..."
+      trayTest --version
+    fi
 } || {
     cd "$currentDir"
     abort "Installation failed!"
